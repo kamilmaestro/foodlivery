@@ -1,4 +1,4 @@
-package com.kamilmarnik.foodlivery;
+package com.kamilmarnik.foodlivery.supplier.domain;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;

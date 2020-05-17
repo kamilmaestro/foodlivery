@@ -1,5 +1,6 @@
-package com.kamilmarnik.foodlivery;
+package com.kamilmarnik.foodlivery.supplier.domain;
 
+import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
