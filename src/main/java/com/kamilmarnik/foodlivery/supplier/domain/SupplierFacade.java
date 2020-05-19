@@ -1,10 +1,14 @@
 package com.kamilmarnik.foodlivery.supplier.domain;
 
+import com.kamilmarnik.foodlivery.infrastructure.PageInfo;
 import com.kamilmarnik.foodlivery.supplier.dto.*;
 import com.kamilmarnik.foodlivery.supplier.exception.SupplierNotFound;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,9 +19,11 @@ public class SupplierFacade {
 
   SupplierRepository supplierRepository;
   FoodRepository foodRepository;
+  SupplierCreator supplierCreator;
+  FoodCreator foodCreator;
 
   public SupplierDto addSupplier(AddSupplierDto addSupplier) {
-    Supplier toSave = Supplier.builder().name(addSupplier.getName()).build();
+    Supplier toSave = supplierCreator.from(addSupplier);
     return supplierRepository.save(toSave).dto();
   }
 
@@ -28,12 +34,8 @@ public class SupplierFacade {
   }
 
   public FoodDto addFoodToSupplierMenu(AddFoodToMenuDto addedFood) {
-    Food food = Food.builder()
-        .name(addedFood.getName())
-        .supplierID(addedFood.getSupplierId())
-        .build();
-
-    return foodRepository.save(food).dto();
+    Food toSave = foodCreator.from(addedFood);
+    return foodRepository.save(toSave).dto();
   }
 
   public SupplierMenuDto getSupplierMenu(long supplierId) {
@@ -43,5 +45,10 @@ public class SupplierFacade {
         .collect(Collectors.toList());
 
     return SupplierMenuDto.withSupplier(supplier).addFoodToMenu(supplierFood);
+  }
+
+  public Page<SupplierDto> findAllSuppliers(PageInfo pageInfo) {
+    return supplierRepository.findAll(pageInfo.toPageRequest())
+        .map(Supplier::dto);
   }
 }

@@ -1,14 +1,8 @@
 package com.kamilmarnik.foodlivery.supplier.domain;
 
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 class InMemorySupplierRepository implements SupplierRepository {
@@ -27,7 +21,8 @@ class InMemorySupplierRepository implements SupplierRepository {
 
   @Override
   public Page<Supplier> findAll(Pageable pageable) {
-    return null;
+    List<Supplier> suppliers = new ArrayList<>(values.values());
+    return new PageImpl<>(suppliers);
   }
 
   @Override
@@ -62,7 +57,7 @@ class InMemorySupplierRepository implements SupplierRepository {
 
   @Override
   public Supplier save(Supplier supplier) {
-    if (supplier.getId() == null) {
+    if (supplier.getId() == null || supplier.getId() == 0L) {
       long supplierId = new Random().nextLong();
       supplier = supplier.toBuilder()
           .id(supplierId)

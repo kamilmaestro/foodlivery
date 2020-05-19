@@ -6,16 +6,24 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @FieldDefaults(level = AccessLevel.PRIVATE)
-class SupplierFacadeCreator {
+class SupplierConfiguration {
+
+  SupplierFacade supplierFacade() {
+    return SupplierFacade.builder()
+        .supplierRepository(new InMemorySupplierRepository())
+        .foodRepository(new InMemoryFoodRepository())
+        .supplierCreator(new SupplierCreator())
+        .foodCreator(new FoodCreator())
+        .build();
+  }
 
   SupplierFacade supplierFacade(SupplierRepository supplierRepository, FoodRepository foodRepository) {
     return SupplierFacade.builder()
         .supplierRepository(supplierRepository)
         .foodRepository(foodRepository)
+        .supplierCreator(new SupplierCreator())
+        .foodCreator(new FoodCreator())
         .build();
   }
 
-  SupplierFacade supplierFacade() {
-    return SupplierFacade.builder().build();
-  }
 }

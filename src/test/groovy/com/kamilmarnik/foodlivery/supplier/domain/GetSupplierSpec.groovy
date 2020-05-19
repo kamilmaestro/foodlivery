@@ -1,0 +1,31 @@
+package com.kamilmarnik.foodlivery.supplier.domain
+
+import com.kamilmarnik.foodlivery.infrastructure.PageInfo
+import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
+import com.kamilmarnik.foodlivery.supplier.exception.SupplierNotFound
+import org.springframework.data.domain.Page
+import spock.lang.Specification
+
+class GetSupplierSpec extends Specification implements SampleSuppliers, SampleFood {
+
+  private final SupplierFacade supplierFacade = new SupplierConfiguration().supplierFacade()
+  private final PageInfo pageInfo = new PageInfo(0, 10)
+  private final static FAKE_SUPPLIER_ID = 0L
+
+  def "should be able to see all suppliers" () {
+    given: "there are $PIZZA_RESTAURANT, $KEBAB_RESTAURANT and $APPLE_RESTAURANT suppliers"
+      withSampleSuppliers(supplierFacade, PIZZA_RESTAURANT, KEBAB_RESTAURANT, APPLE_RESTAURANT)
+    when: "wants to get all suppliers"
+      Page<SupplierDto> suppliers = supplierFacade.findAllSuppliers(pageInfo)
+    then: "gets those suppliers"
+      suppliers.content.name
+          .containsAll([PIZZA_RESTAURANT.name, KEBAB_RESTAURANT.name, APPLE_RESTAURANT.name])
+  }
+
+  def "should not get not existing supplier" () {
+    when: "wants to get not existing supplier"
+      supplierFacade.getSupplier(FAKE_SUPPLIER_ID)
+    then: "there is no such supplier"
+      thrown(SupplierNotFound)
+  }
+}

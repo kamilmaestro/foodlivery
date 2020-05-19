@@ -63,7 +63,7 @@ class InMemoryFoodRepository implements FoodRepository {
 
   @Override
   public Food save(Food food) {
-    if (food.getId() == null) {
+    if (food.getId() == null || food.getId() == 0L) {
       long foodId = new Random().nextLong();
       food = food.toBuilder()
           .id(foodId)
