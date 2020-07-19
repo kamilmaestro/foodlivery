@@ -5,32 +5,38 @@ import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
 
 trait SampleSuppliers {
 
-  long PIZZA_RESTAURANT_ID = 111L
-  long KEBAB_RESTAURANT_ID = 112L
-  long APPLE_RESTAURANT_ID = 113L
+  private static final long PIZZA_RESTAURANT_ID = 111L
+  private static final long KEBAB_RESTAURANT_ID = 112L
+  private static final long APPLE_RESTAURANT_ID = 113L
 
-  SupplierDto PIZZA_RESTAURANT = SupplierDto.builder()
-      .id(PIZZA_RESTAURANT_ID)
-      .name("Pizza Restaurant")
-      .build()
+  private static final Map NEW_SUPPLIER_DEFAULT_VALUES = [
+      "name" : "Supplier",
+      "phoneNumber" : "123456789",
+      "email" : "supplier@email.com"
+  ]
 
-  SupplierDto KEBAB_RESTAURANT = SupplierDto.builder()
-      .id(KEBAB_RESTAURANT_ID)
-      .name("Kebab Restaurant")
-      .build()
+  SupplierDto PIZZA_RESTAURANT = createSupplierDto(PIZZA_RESTAURANT_ID, "Pizza Restaurant")
+  SupplierDto KEBAB_RESTAURANT = createSupplierDto(KEBAB_RESTAURANT_ID, "Kebab Restaurant")
+  SupplierDto APPLE_RESTAURANT = createSupplierDto(APPLE_RESTAURANT_ID, "Apple Restaurant")
 
-  SupplierDto APPLE_RESTAURANT = SupplierDto.builder()
-      .id(APPLE_RESTAURANT_ID)
-      .name("Apple Restaurant")
-      .build()
-
-  void withSampleSuppliers(SupplierFacade supplierFacade, SupplierDto ...suppliers) {
+  static void withSampleSuppliers(SupplierFacade supplierFacade, SupplierDto ...suppliers) {
     suppliers.each { supplier ->
-      supplierFacade.addSupplier(AddSupplierDto.builder().name(supplier.name).build())}
+      supplierFacade.addSupplier(newSupplier(name: supplier.name))}
   }
 
-  AddSupplierDto newSupplier(String name) {
-    AddSupplierDto.builder()
+  static AddSupplierDto newSupplier(Map<String, Object> properties = [:]) {
+    properties = NEW_SUPPLIER_DEFAULT_VALUES + properties
+
+    return AddSupplierDto.builder()
+        .name(properties.name as String)
+        .phoneNumber(properties.phoneNumber as String)
+        .email(properties.email as String)
+        .build()
+  }
+
+  private static SupplierDto createSupplierDto(long id, String name) {
+    return SupplierDto.builder()
+        .id(id)
         .name(name)
         .build()
   }

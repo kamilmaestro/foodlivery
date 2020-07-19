@@ -18,14 +18,14 @@ class GetSupplierSpec extends Specification implements SampleSuppliers, SampleFo
     when: "wants to get all suppliers"
       Page<SupplierDto> suppliers = supplierFacade.findAllSuppliers(pageInfo)
     then: "gets those suppliers"
-      suppliers.content.name
-          .containsAll([PIZZA_RESTAURANT.name, KEBAB_RESTAURANT.name, APPLE_RESTAURANT.name])
+      suppliers.content.name.sort() == [PIZZA_RESTAURANT.name, KEBAB_RESTAURANT.name, APPLE_RESTAURANT.name].sort()
   }
 
   def "should not get not existing supplier" () {
     when: "wants to get not existing supplier"
-      supplierFacade.getSupplier(FAKE_SUPPLIER_ID)
+      supplierFacade.getSupplierDto(FAKE_SUPPLIER_ID)
     then: "there is no such supplier"
       thrown(SupplierNotFound)
   }
+
 }

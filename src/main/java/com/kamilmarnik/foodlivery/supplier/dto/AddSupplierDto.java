@@ -9,5 +9,9 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public final class AddSupplierDto {
+
   String name;
+  String phoneNumber;
+  String email;
+
 }

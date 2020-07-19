@@ -27,28 +27,38 @@ public class SupplierFacade {
     return supplierRepository.save(toSave).dto();
   }
 
-  public SupplierDto getSupplier(long supplierId) {
-    return supplierRepository.findById(supplierId)
-        .orElseThrow(SupplierNotFound::new)
-        .dto();
+  public SupplierDto getSupplierDto(long supplierId) {
+    return getSupplier(supplierId).dto();
   }
 
   public FoodDto addFoodToSupplierMenu(AddFoodToMenuDto addedFood) {
+    checkIfSupplierExists(addedFood.getSupplierId());
     Food toSave = foodCreator.from(addedFood);
+
     return foodRepository.save(toSave).dto();
   }
 
   public SupplierMenuDto getSupplierMenu(long supplierId) {
-    SupplierDto supplier = getSupplier(supplierId);
+    Supplier supplier = getSupplier(supplierId);
     List<FoodDto> supplierFood = foodRepository.findAllBySupplierId(supplierId).stream()
         .map(Food::dto)
         .collect(Collectors.toList());
 
-    return SupplierMenuDto.withSupplier(supplier).addFoodToMenu(supplierFood);
+    return supplier.menuDto(supplierFood);
   }
 
   public Page<SupplierDto> findAllSuppliers(PageInfo pageInfo) {
     return supplierRepository.findAll(pageInfo.toPageRequest())
         .map(Supplier::dto);
   }
+
+  private void checkIfSupplierExists(long supplierId) {
+    getSupplier(supplierId);
+  }
+
+  private Supplier getSupplier(long supplierId) {
+    return supplierRepository.findById(supplierId)
+            .orElseThrow(SupplierNotFound::new);
+  }
+
 }

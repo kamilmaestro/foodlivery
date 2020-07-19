@@ -2,13 +2,15 @@ package com.kamilmarnik.foodlivery.supplier.domain
 
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
+import com.kamilmarnik.foodlivery.supplier.exception.SupplierNotFound
 import spock.lang.Specification
 
 class AddFoodToMenuSpec extends Specification implements SampleSuppliers, SampleFood {
 
   private final SupplierFacade supplierFacade = new SupplierConfiguration().supplierFacade()
+  private final Long FAKE_SUPPLIER_ID = 0l
 
-  def "should be able to add a food to the menu" () {
+  def "should be able to add food to the menu" () {
     given: "there is a supplier"
       SupplierDto supplier = supplierFacade.addSupplier(newSupplier())
     when: "adds a food to the menu"
@@ -16,6 +18,13 @@ class AddFoodToMenuSpec extends Specification implements SampleSuppliers, Sample
     then: "menu of this supplier contains this food"
       supplierFacade.getSupplierMenu(addedFood.supplierId).getMenu()
           .contains(addedFood)
+  }
+
+  def "should not add food to a non-existing supplier" () {
+    when: "adds a food to the menu"
+      supplierFacade.addFoodToSupplierMenu(newFood(FAKE_SUPPLIER_ID))
+    then: "menu of this supplier contains this food"
+      thrown(SupplierNotFound)
   }
 
 }

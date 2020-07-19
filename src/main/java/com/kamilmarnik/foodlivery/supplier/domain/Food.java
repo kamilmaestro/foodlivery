@@ -26,4 +26,5 @@ class Food {
         .price(this.price)
         .build();
   }
+
 }
