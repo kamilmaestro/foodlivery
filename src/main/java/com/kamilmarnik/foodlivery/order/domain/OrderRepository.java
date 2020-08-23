@@ -2,5 +2,14 @@ package com.kamilmarnik.foodlivery.order.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-interface OrderRepository extends JpaRepository<Proposal, Long> {
+import java.util.Optional;
+
+interface OrderRepository extends JpaRepository<Order, Long> {
+
+  Optional<Order> findById(String s);
+
+  boolean existsById(String s);
+
+  Order getOne(String s);
+
 }

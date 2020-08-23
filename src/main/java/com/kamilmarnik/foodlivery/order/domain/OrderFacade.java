@@ -14,12 +14,12 @@ public class OrderFacade {
   OrderRepository orderRepository;
 
   public ProposalDto createProposal(AddProposalDto addProposal) {
-    return orderRepository.save(Proposal.builder().build()).dto();
+    return orderRepository.save(Order.builder().build()).dto();
   }
 
   ProposalDto getProposal(long proposalId) {
     return orderRepository.findById(proposalId)
-        .orElseThrow(() -> new OrderNotFound("Can not find proposal with id: " + proposalId))
+        .orElseThrow(() -> new OrderNotFound("Can not find proposal with uuid: " + proposalId))
         .dto();
   }
 

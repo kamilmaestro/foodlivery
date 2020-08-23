@@ -11,7 +11,7 @@ class AddOrderSpec extends Specification {
     when: "creates a new proposal"
       ProposalDto proposal = orderFacade.createProposal()
     then: "proposal is added"
-      proposal.proposalId == orderFacade.getProposal(proposal.getProposalId()).proposalId
+      proposal.proposalId == orderFacade.getProposal(proposal.proposalId).proposalId
   }
 
 }

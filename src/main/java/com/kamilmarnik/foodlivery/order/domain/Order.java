@@ -4,12 +4,14 @@ import com.kamilmarnik.foodlivery.order.dto.ProposalDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.UUID;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-class Proposal {
+class Order {
 
   Long id;
 
