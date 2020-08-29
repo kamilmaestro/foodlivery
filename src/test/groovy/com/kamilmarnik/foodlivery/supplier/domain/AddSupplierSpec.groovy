@@ -7,7 +7,7 @@ import spock.lang.Unroll
 
 class AddSupplierSpec extends Specification implements SampleSuppliers, SampleFood {
 
-  private final SupplierFacade supplierFacade = new SupplierConfiguration().supplierFacade()
+  private SupplierFacade supplierFacade = new SupplierConfiguration().supplierFacade()
 
   def "should add a new supplier" () {
     when: "wants to add a new supplier"

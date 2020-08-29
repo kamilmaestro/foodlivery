@@ -5,7 +5,7 @@ import spock.lang.Specification
 
 class AddOrderSpec extends Specification {
 
-  private final OrderFacade orderFacade = new OrderConfiguration().orderFacade()
+  private OrderFacade orderFacade = new OrderConfiguration().orderFacade()
 
   def "should be able to create a new proposal" () {
     when: "creates a new proposal"

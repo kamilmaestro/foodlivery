@@ -7,8 +7,7 @@ import spock.lang.Specification
 
 class AddFoodToMenuSpec extends Specification implements SampleSuppliers, SampleFood {
 
-  private final SupplierFacade supplierFacade = new SupplierConfiguration().supplierFacade()
-  private final Long FAKE_SUPPLIER_ID = 0l
+  private SupplierFacade supplierFacade = new SupplierConfiguration().supplierFacade()
 
   def "should be able to add food to the menu" () {
     given: "there is a supplier"

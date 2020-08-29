@@ -5,6 +5,7 @@ import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
 
 trait SampleSuppliers {
 
+  static final long FAKE_SUPPLIER_ID = 0l
   private static final long PIZZA_RESTAURANT_ID = 111L
   private static final long KEBAB_RESTAURANT_ID = 112L
   private static final long APPLE_RESTAURANT_ID = 113L

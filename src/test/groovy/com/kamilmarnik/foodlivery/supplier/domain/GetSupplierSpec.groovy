@@ -8,9 +8,8 @@ import spock.lang.Specification
 
 class GetSupplierSpec extends Specification implements SampleSuppliers, SampleFood {
 
-  private final SupplierFacade supplierFacade = new SupplierConfiguration().supplierFacade()
-  private final PageInfo pageInfo = new PageInfo(0, 10)
-  private final static FAKE_SUPPLIER_ID = 0L
+  private SupplierFacade supplierFacade = new SupplierConfiguration().supplierFacade()
+  private PageInfo pageInfo = new PageInfo(0, 10)
 
   def "should be able to see all suppliers" () {
     given: "there are $PIZZA_RESTAURANT, $KEBAB_RESTAURANT and $APPLE_RESTAURANT suppliers"
