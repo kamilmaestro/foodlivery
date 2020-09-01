@@ -14,4 +14,5 @@ public final class SupplierDto {
 
   long id;
   String name;
+
 }

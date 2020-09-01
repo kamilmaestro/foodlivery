@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @FieldDefaults(level = AccessLevel.PRIVATE)
-class SupplierConfiguration {
+public class SupplierConfiguration {
 
-  SupplierFacade supplierFacade() {
+  public SupplierFacade supplierFacade() {
     return SupplierFacade.builder()
         .supplierRepository(new InMemorySupplierRepository())
         .foodRepository(new InMemoryFoodRepository())

@@ -18,4 +18,5 @@ public final class FoodDto {
   String name;
   long supplierId;
   BigDecimal price;
+
 }
