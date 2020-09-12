@@ -88,16 +88,6 @@ class InMemoryOrderRepository implements OrderRepository {
   }
 
   @Override
-  public Optional<Order> findById(String s) {
-    return Optional.empty();
-  }
-
-  @Override
-  public boolean existsById(String s) {
-    return false;
-  }
-
-  @Override
   public void flush() {
 
   }
@@ -119,11 +109,6 @@ class InMemoryOrderRepository implements OrderRepository {
 
   @Override
   public Order getOne(Long aLong) {
-    return null;
-  }
-
-  @Override
-  public Order getOne(String s) {
     return null;
   }
 
