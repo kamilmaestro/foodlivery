@@ -10,11 +10,11 @@ class AddFoodToMenuSpec extends Specification implements SampleSuppliers, Sample
   private SupplierFacade supplierFacade = new SupplierConfiguration().supplierFacade()
 
   def "should be able to add food to the menu" () {
-    given: "there is a supplier"
-      SupplierDto supplier = supplierFacade.addSupplier(newSupplier())
-    when: "adds a food to the menu"
+    given: "there is a supplier $PIZZA_RESTAURANT"
+      SupplierDto supplier = supplierFacade.addSupplier(newSupplier(name: PIZZA_RESTAURANT.name))
+    when: "adds a food to the menu of $PIZZA_RESTAURANT"
       FoodDto addedFood = supplierFacade.addFoodToSupplierMenu(newFood(supplier.id))
-    then: "menu of this supplier contains this food"
+    then: "menu of $PIZZA_RESTAURANT contains this food"
       supplierFacade.getSupplierMenu(addedFood.supplierId).getMenu()
           .contains(addedFood)
   }

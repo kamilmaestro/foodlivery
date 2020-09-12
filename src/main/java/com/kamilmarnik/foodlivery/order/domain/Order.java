@@ -18,6 +18,7 @@ class Order {
   Long supplierId;
   Long foodId;
   Long userId;
+  Integer amountOfFood;
   LocalDateTime createdAt;
 
   public ProposalDto dto(FoodDto food) {

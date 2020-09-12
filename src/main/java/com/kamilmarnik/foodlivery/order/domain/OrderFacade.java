@@ -2,17 +2,13 @@ package com.kamilmarnik.foodlivery.order.domain;
 
 import com.kamilmarnik.foodlivery.order.dto.AddProposalDto;
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto;
-import com.kamilmarnik.foodlivery.order.exception.OrderNotFound;
+import com.kamilmarnik.foodlivery.order.exception.ProposalNotFound;
 import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade;
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto;
-import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto;
+import com.kamilmarnik.foodlivery.supplier.exception.FoodNotFound;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -26,7 +22,7 @@ public class OrderFacade {
     final FoodDto foodDto = supplierFacade.getSupplierMenu(addProposal.getSupplierId()).getMenu().stream()
         .filter(food -> food.getId() == addProposal.getFoodId())
         .findFirst()
-        .orElseThrow(RuntimeException::new);
+        .orElseThrow(() -> new FoodNotFound("Can not find food with id: " + addProposal.getFoodId()));
     final Order proposal = orderCreator.createProposal(addProposal);
 
     return orderRepository.save(proposal).dto(foodDto);

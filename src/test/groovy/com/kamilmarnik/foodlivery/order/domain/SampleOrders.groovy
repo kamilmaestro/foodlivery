@@ -4,11 +4,20 @@ import com.kamilmarnik.foodlivery.order.dto.AddProposalDto
 
 trait SampleOrders {
 
-  static AddProposalDto newProposal(Long supplierId, Long foodId) {
+  private static final Map NEW_Order_DEFAULT_VALUES = [
+      "supplierId" : "12345",
+      "foodId" : "12345",
+      "amountOfFood" : "1"
+  ]
+
+  static AddProposalDto newProposal(Map<String, Object> properties = [:]) {
+    properties = NEW_Order_DEFAULT_VALUES + properties
+
     return AddProposalDto.builder()
-      .supplierId(supplierId)
-      .foodId(foodId)
-      .build()
+        .supplierId(properties.supplierId as Long)
+        .foodId(properties.foodId as Long)
+        .amountOfFood(properties.amountOfFood as Integer)
+        .build()
   }
 
 }

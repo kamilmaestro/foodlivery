@@ -6,10 +6,4 @@ import java.util.Optional;
 
 interface OrderRepository extends JpaRepository<Order, Long> {
 
-  Optional<Order> findById(String s);
-
-  boolean existsById(String s);
-
-  Order getOne(String s);
-
 }
