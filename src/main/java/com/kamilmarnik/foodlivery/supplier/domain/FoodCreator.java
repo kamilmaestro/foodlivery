@@ -8,6 +8,7 @@ final class FoodCreator {
     return Food.builder()
         .name(addFood.getName())
         .supplierID(addFood.getSupplierId())
+        .amount(new AmountOfFood(addFood.getAmount()))
         .build();
   }
 }

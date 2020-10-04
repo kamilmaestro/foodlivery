@@ -13,18 +13,21 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.Optional;
 
-@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class LoggedUserGetter {
+public final class LoggedUserGetter {
 
-  public String getLoggedUsername() {
+  private LoggedUserGetter() {
+    throw new IllegalStateException("LoggedUserGetter is na utility class an can not be instantiated");
+  }
+
+  public static String getLoggedUsername() {
     return Optional.ofNullable(SecurityContextHolder.getContext())
         .map(SecurityContext::getAuthentication)
         .map(Authentication::getName)
         .orElseThrow(() -> new UsernameNotFoundException("Can not get currently logged in user"));
   }
 
-  public Long getLoggedUserId() {
+  public static Long getLoggedUserId() {
     return Optional.ofNullable(SecurityContextHolder.getContext())
         .map(SecurityContext::getAuthentication)
         .map(authentication -> (CustomUserDetails) authentication.getPrincipal())

@@ -1,4 +1,4 @@
-package com.kamilmarnik.foodlivery.order.exception;
+package com.kamilmarnik.foodlivery.supplier.exception;
 
 public class IncorrectAmountOfFood extends RuntimeException {
 

@@ -1,8 +1,7 @@
 package com.kamilmarnik.foodlivery.order.domain
 
-import com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUserGetter
+import com.kamilmarnik.foodlivery.SecurityContextProvider
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto
-import com.kamilmarnik.foodlivery.order.exception.IncorrectAmountOfFood
 import com.kamilmarnik.foodlivery.samples.SampleUsers
 import com.kamilmarnik.foodlivery.supplier.domain.SampleFood
 import com.kamilmarnik.foodlivery.supplier.domain.SampleSuppliers
@@ -10,18 +9,18 @@ import com.kamilmarnik.foodlivery.supplier.domain.SupplierConfiguration
 import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
+import com.kamilmarnik.foodlivery.supplier.exception.IncorrectAmountOfFood
 import com.kamilmarnik.foodlivery.supplier.exception.SupplierNotFound
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class AddOrderSpec extends Specification implements SampleUsers, SampleSuppliers, SampleOrders, SampleFood {
+class CreateProposalSpec extends Specification implements SampleUsers, SampleSuppliers, SampleOrders, SampleFood, SecurityContextProvider {
 
-  private LoggedUserGetter loggedUserGetter = Mock(LoggedUserGetter.class)
   private SupplierFacade supplierFacade = new SupplierConfiguration().supplierFacade()
-  private OrderFacade orderFacade = new OrderConfiguration().orderFacade(loggedUserGetter, supplierFacade)
+  private OrderFacade orderFacade = new OrderConfiguration().orderFacade(supplierFacade)
 
   def setup() {
-    loggedUserGetter.getLoggedUserId() >> JOHN.userId
+    createContext(JOHN)
   }
 
   def "should create a new proposal" () {
@@ -35,7 +34,7 @@ class AddOrderSpec extends Specification implements SampleUsers, SampleSuppliers
       proposal.supplierId == supplier.id
       proposal.userId == JOHN.userId
       proposal.createdAt != null
-      proposal.food.id == addedFood.id
+      proposal.foodId == addedFood.id
   }
 
   @Unroll
@@ -57,5 +56,7 @@ class AddOrderSpec extends Specification implements SampleUsers, SampleSuppliers
     then: "proposal is not added due to wrong supplier"
       thrown(SupplierNotFound)
   }
+
+  //nie powinien dodac wiecej jedzenia niz supplier posiada
 
 }

@@ -11,27 +11,27 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-class InMemoryOrderRepository implements OrderRepository {
+class InMemoryProposalRepository implements ProposalRepository {
 
-  private final Map<Long, Order> values = new ConcurrentHashMap<>();
+  private final Map<Long, Proposal> values = new ConcurrentHashMap<>();
 
   @Override
-  public List<Order> findAll() {
+  public List<Proposal> findAll() {
     return null;
   }
 
   @Override
-  public List<Order> findAll(Sort sort) {
+  public List<Proposal> findAll(Sort sort) {
     return null;
   }
 
   @Override
-  public Page<Order> findAll(Pageable pageable) {
+  public Page<Proposal> findAll(Pageable pageable) {
     return null;
   }
 
   @Override
-  public List<Order> findAllById(Iterable<Long> iterable) {
+  public List<Proposal> findAllById(Iterable<Long> iterable) {
     return null;
   }
 
@@ -46,12 +46,12 @@ class InMemoryOrderRepository implements OrderRepository {
   }
 
   @Override
-  public void delete(Order order) {
+  public void delete(Proposal order) {
 
   }
 
   @Override
-  public void deleteAll(Iterable<? extends Order> iterable) {
+  public void deleteAll(Iterable<? extends Proposal> iterable) {
 
   }
 
@@ -61,24 +61,24 @@ class InMemoryOrderRepository implements OrderRepository {
   }
 
   @Override
-  public Order save(Order order) {
-    if (order.getId() == null || order.getId() == 0L) {
+  public Proposal save(Proposal proposal) {
+    if (proposal.getId() == null || proposal.getId() == 0L) {
       long supplierId = new Random().nextLong();
-      order = order.toBuilder()
+      proposal = proposal.toBuilder()
           .id(supplierId)
           .build();
     }
-    values.put(order.getId(), order);
-    return order;
+    values.put(proposal.getId(), proposal);
+    return proposal;
   }
 
   @Override
-  public <S extends Order> List<S> saveAll(Iterable<S> iterable) {
+  public <S extends Proposal> List<S> saveAll(Iterable<S> iterable) {
     return null;
   }
 
   @Override
-  public Optional<Order> findById(Long id) {
+  public Optional<Proposal> findById(Long id) {
     return Optional.ofNullable(values.get(id));
   }
 
@@ -93,12 +93,12 @@ class InMemoryOrderRepository implements OrderRepository {
   }
 
   @Override
-  public <S extends Order> S saveAndFlush(S s) {
+  public <S extends Proposal> S saveAndFlush(S s) {
     return null;
   }
 
   @Override
-  public void deleteInBatch(Iterable<Order> iterable) {
+  public void deleteInBatch(Iterable<Proposal> iterable) {
 
   }
 
@@ -108,37 +108,37 @@ class InMemoryOrderRepository implements OrderRepository {
   }
 
   @Override
-  public Order getOne(Long aLong) {
+  public Proposal getOne(Long aLong) {
     return null;
   }
 
   @Override
-  public <S extends Order> Optional<S> findOne(Example<S> example) {
+  public <S extends Proposal> Optional<S> findOne(Example<S> example) {
     return Optional.empty();
   }
 
   @Override
-  public <S extends Order> List<S> findAll(Example<S> example) {
+  public <S extends Proposal> List<S> findAll(Example<S> example) {
     return null;
   }
 
   @Override
-  public <S extends Order> List<S> findAll(Example<S> example, Sort sort) {
+  public <S extends Proposal> List<S> findAll(Example<S> example, Sort sort) {
     return null;
   }
 
   @Override
-  public <S extends Order> Page<S> findAll(Example<S> example, Pageable pageable) {
+  public <S extends Proposal> Page<S> findAll(Example<S> example, Pageable pageable) {
     return null;
   }
 
   @Override
-  public <S extends Order> long count(Example<S> example) {
+  public <S extends Proposal> long count(Example<S> example) {
     return 0;
   }
 
   @Override
-  public <S extends Order> boolean exists(Example<S> example) {
+  public <S extends Proposal> boolean exists(Example<S> example) {
     return false;
   }
 

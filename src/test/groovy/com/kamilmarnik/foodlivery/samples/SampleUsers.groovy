@@ -11,8 +11,8 @@ trait SampleUsers {
     UserDto.builder()
         .userId(id)
         .username(name)
-        .email(email).
-        build()
+        .email(email)
+        .build()
   }
 
 }

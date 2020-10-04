@@ -1,6 +1,5 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
-import com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUserGetter;
 import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -9,22 +8,18 @@ import org.springframework.context.annotation.Configuration;
 class OrderConfiguration {
 
   @Autowired
-  OrderRepository orderRepository;
-
-  @Autowired
-  LoggedUserGetter loggedUserGetter;
+  ProposalRepository proposalRepository;
 
   @Autowired
   SupplierFacade supplierFacade;
 
-  OrderFacade orderFacade(LoggedUserGetter loggedUserGetter, SupplierFacade supplierFacade) {
-    return orderFacade(new InMemoryOrderRepository(), loggedUserGetter, supplierFacade);
+  OrderFacade orderFacade(SupplierFacade supplierFacade) {
+    return orderFacade(new InMemoryProposalRepository(), supplierFacade);
   }
 
-  OrderFacade orderFacade(OrderRepository orderRepository, LoggedUserGetter loggedUserGetter, SupplierFacade supplierFacade) {
+  OrderFacade orderFacade(ProposalRepository proposalRepository, SupplierFacade supplierFacade) {
     return OrderFacade.builder()
-        .orderRepository(orderRepository)
-        .orderCreator(new OrderCreator(loggedUserGetter))
+        .proposalRepository(proposalRepository)
         .supplierFacade(supplierFacade)
         .build();
   }

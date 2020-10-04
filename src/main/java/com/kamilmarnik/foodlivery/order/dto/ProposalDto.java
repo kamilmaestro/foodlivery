@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 public final class ProposalDto {
 
   long proposalId;
+  long foodId;
   long supplierId;
   long userId;
   LocalDateTime createdAt;
-  FoodDto food;
 
 }

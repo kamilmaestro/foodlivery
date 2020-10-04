@@ -17,13 +17,14 @@ class Food {
   String name;
   Long supplierID;
   BigDecimal price;
+  AmountOfFood amount;
 
   FoodDto dto() {
     return FoodDto.builder()
         .id(this.id)
         .name(this.name)
         .supplierId(this.supplierID)
-        .price(this.price)
+        .amount(amount.getValue())
         .build();
   }
 
