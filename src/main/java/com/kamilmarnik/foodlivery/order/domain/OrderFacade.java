@@ -16,10 +16,7 @@ public class OrderFacade {
   SupplierFacade supplierFacade;
 
   public ProposalDto createProposal(AddProposalDto addProposal) {
-    supplierFacade.getSupplierMenu(addProposal.getSupplierId()).getMenu().stream()
-        .filter(food -> food.getId() == addProposal.getFoodId())
-        .findFirst()
-        .orElseThrow(() -> new FoodNotFound("Can not find food with id: " + addProposal.getFoodId()));
+    supplierFacade.checkIfSupplierExists(addProposal.getSupplierId());
     final Proposal proposal = new Proposal(addProposal);
 
     return proposalRepository.save(proposal).dto();

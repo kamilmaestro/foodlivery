@@ -2,7 +2,7 @@ package com.kamilmarnik.foodlivery.supplier.domain
 
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
-import com.kamilmarnik.foodlivery.supplier.exception.IncorrectAmountOfFood
+import com.kamilmarnik.foodlivery.supplier.exception.InvalidFoodPrice
 import com.kamilmarnik.foodlivery.supplier.exception.SupplierNotFound
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -15,29 +15,49 @@ class AddFoodToMenuSpec extends Specification implements SampleSuppliers, Sample
     given: "there is a supplier $PIZZA_RESTAURANT"
       SupplierDto supplier = supplierFacade.addSupplier(newSupplier(name: PIZZA_RESTAURANT.name))
     when: "adds a food to the menu of $PIZZA_RESTAURANT"
-      FoodDto addedFood = supplierFacade.addFoodToSupplierMenu(newFood(supplier.id))
+      FoodDto addedFood = supplierFacade.addFoodToSupplierMenu(
+          newFood(supplierId: supplier.id, name: PIZZA.name, price: PIZZA.price)
+      )
     then: "menu of $PIZZA_RESTAURANT contains this food"
-      supplierFacade.getSupplierMenu(addedFood.supplierId).getMenu()
-          .contains(addedFood)
+      addedFood.supplierId == supplier.id
+      addedFood.name == PIZZA.name
+      addedFood.price == PIZZA.price
   }
 
   def "should not add food to a non-existing supplier" () {
     when: "adds a food to the menu"
-      supplierFacade.addFoodToSupplierMenu(newFood(FAKE_SUPPLIER_ID))
-    then: "menu of this supplier contains this food"
+      supplierFacade.addFoodToSupplierMenu(newFood(supplierId: FAKE_SUPPLIER_ID))
+    then: "food is not added because supplier can not be found"
       thrown(SupplierNotFound)
   }
 
   @Unroll
-  def "should not be able to add a food with wrong amount" () {
+  def "should not add a food with the wrong price" () {
     given: "there is a supplier $PIZZA_RESTAURANT"
       SupplierDto supplier = supplierFacade.addSupplier(newSupplier(name: PIZZA_RESTAURANT.name))
-    when: "adds a food with amount: $amount to the menu of $PIZZA_RESTAURANT"
-      supplierFacade.addFoodToSupplierMenu(newFood(supplier.id, amount))
-    then: "this food is not added"
-      thrown(IncorrectAmountOfFood)
+    when: "wants to add a food to the menu of $PIZZA_RESTAURANT"
+      supplierFacade.addFoodToSupplierMenu(newFood(supplierId: supplier.id, price: price))
+    then: "food is not added due to wrong price"
+      thrown(InvalidFoodPrice)
     where:
-      amount << [0, null, -1]
+      price << [0, -1, null]
+  }
+
+  @Unroll
+  def "should store money in value with at most two decimal places" () {
+    given: "there is a supplier"
+      SupplierDto supplier = supplierFacade.addSupplier(newSupplier(name: PIZZA_RESTAURANT.name))
+    expect: "added food contains price with at most two decimal places"
+      supplierFacade.addFoodToSupplierMenu(newFood(supplierId: supplier.id, price: price))
+          .price == returnedValue
+    where:
+      price   ||  returnedValue
+      0.5555  ||  0.56
+      2.123   ||  2.12
+      1       ||  1
+      10.0091 ||  10.01
+      4.0008  ||  4
+      21.00   ||  21
   }
 
 }

@@ -38,21 +38,12 @@ public class SupplierFacade {
     return foodRepository.save(toSave).dto();
   }
 
-  public SupplierMenuDto getSupplierMenu(long supplierId) {
-    Supplier supplier = getSupplier(supplierId);
-    List<FoodDto> supplierFood = foodRepository.findAllBySupplierId(supplierId).stream()
-        .map(Food::dto)
-        .collect(Collectors.toList());
-
-    return supplier.menuDto(supplierFood);
-  }
-
   public Page<SupplierDto> findAllSuppliers(PageInfo pageInfo) {
     return supplierRepository.findAll(pageInfo.toPageRequest())
         .map(Supplier::dto);
   }
 
-  private void checkIfSupplierExists(long supplierId) {
+  public void checkIfSupplierExists(long supplierId) {
     getSupplier(supplierId);
   }
 

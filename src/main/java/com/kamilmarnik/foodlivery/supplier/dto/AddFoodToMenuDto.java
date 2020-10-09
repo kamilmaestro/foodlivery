@@ -12,6 +12,6 @@ public final class AddFoodToMenuDto {
 
   String name;
   long supplierId;
-  Integer amount;
+  Double price;
 
 }

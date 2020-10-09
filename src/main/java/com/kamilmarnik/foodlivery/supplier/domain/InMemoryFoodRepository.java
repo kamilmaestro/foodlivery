@@ -147,7 +147,7 @@ class InMemoryFoodRepository implements FoodRepository {
   @Override
   public List<Food> findAllBySupplierId(long supplierId) {
     return values.values().stream()
-        .filter(food -> food.getSupplierID() == supplierId)
+        .filter(food -> food.getSupplierId() == supplierId)
         .collect(Collectors.toList());
   }
 

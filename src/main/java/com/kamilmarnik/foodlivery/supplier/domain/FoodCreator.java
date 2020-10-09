@@ -7,8 +7,9 @@ final class FoodCreator {
   Food from(AddFoodToMenuDto addFood) {
     return Food.builder()
         .name(addFood.getName())
-        .supplierID(addFood.getSupplierId())
-        .amount(new AmountOfFood(addFood.getAmount()))
+        .supplierId(addFood.getSupplierId())
+        .price(new Money(addFood.getPrice()))
         .build();
   }
+
 }

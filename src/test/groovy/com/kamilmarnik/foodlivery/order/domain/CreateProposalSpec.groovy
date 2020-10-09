@@ -27,7 +27,7 @@ class CreateProposalSpec extends Specification implements SampleUsers, SampleSup
     given: "there is a supplier $KEBAB_RESTAURANT"
       SupplierDto supplier = supplierFacade.addSupplier(newSupplier(name: KEBAB_RESTAURANT.name))
     and: "there is a food added to $KEBAB_RESTAURANT"
-      FoodDto addedFood = supplierFacade.addFoodToSupplierMenu(newFood(supplier.id))
+      FoodDto addedFood = supplierFacade.addFoodToSupplierMenu(newFood(supplierId: supplier.id))
     when: "$JOHN creates a new proposal with food from $KEBAB_RESTAURANT"
       ProposalDto proposal = orderFacade.createProposal(newProposal(supplierId: supplier.id, foodId: addedFood.id))
     then: "proposal created by $JOHN is added"
@@ -41,7 +41,7 @@ class CreateProposalSpec extends Specification implements SampleUsers, SampleSup
   def "should not be able to create a proposal with amount of food not being a natural number" () {
     given: "there is a food"
       SupplierDto supplier = supplierFacade.addSupplier(newSupplier())
-      FoodDto food = supplierFacade.addFoodToSupplierMenu(newFood(supplier.id))
+      FoodDto food = supplierFacade.addFoodToSupplierMenu(newFood(supplierId: supplier.id))
     when: "$JOHN wants to create a proposal with wrong amount of food equals: $amount"
       orderFacade.createProposal(newProposal(amountOfFood: amount, supplierId: supplier.id, foodId: food.id))
     then: "proposal is not created"
@@ -57,6 +57,6 @@ class CreateProposalSpec extends Specification implements SampleUsers, SampleSup
       thrown(SupplierNotFound)
   }
 
-  //nie powinien dodac wiecej jedzenia niz supplier posiada
+  //nie powinien dodac nie istniejacego food'a
 
 }

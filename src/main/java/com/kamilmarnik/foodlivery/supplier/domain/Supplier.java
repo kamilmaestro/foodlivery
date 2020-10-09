@@ -29,11 +29,4 @@ class Supplier {
         .build();
   }
 
-  SupplierMenuDto menuDto(List<FoodDto> supplierFood) {
-    return SupplierMenuDto.builder()
-        .supplier(dto())
-        .menu(supplierFood)
-        .build();
-  }
-
 }

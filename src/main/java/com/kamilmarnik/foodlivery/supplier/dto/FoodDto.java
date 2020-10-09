@@ -17,6 +17,6 @@ public final class FoodDto {
   long id;
   String name;
   long supplierId;
-  int amount;
+  double price;
 
 }
