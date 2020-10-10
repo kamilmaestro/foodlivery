@@ -16,7 +16,7 @@ public class OrderFacade {
   SupplierFacade supplierFacade;
 
   public ProposalDto createProposal(AddProposalDto addProposal) {
-    supplierFacade.checkIfSupplierExists(addProposal.getSupplierId());
+    supplierFacade.checkIfFoodExists(addProposal.getFoodId(), addProposal.getSupplierId());
     final Proposal proposal = new Proposal(addProposal);
 
     return proposalRepository.save(proposal).dto();

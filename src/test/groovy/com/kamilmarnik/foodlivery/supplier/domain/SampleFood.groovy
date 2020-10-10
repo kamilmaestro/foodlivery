@@ -4,6 +4,7 @@ import com.kamilmarnik.foodlivery.supplier.dto.AddFoodToMenuDto
 
 trait SampleFood {
 
+  static final long FAKE_FOOD_ID = 0l
   AddFoodToMenuDto PIZZA = AddFoodToMenuDto.builder().name("Pizza").price(20).build()
 
   private static final Map NEW_FOOD_DEFAULT_VALUES = [

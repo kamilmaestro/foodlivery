@@ -9,6 +9,7 @@ import com.kamilmarnik.foodlivery.supplier.domain.SupplierConfiguration
 import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
+import com.kamilmarnik.foodlivery.supplier.exception.FoodNotFound
 import com.kamilmarnik.foodlivery.supplier.exception.IncorrectAmountOfFood
 import com.kamilmarnik.foodlivery.supplier.exception.SupplierNotFound
 import spock.lang.Specification
@@ -39,7 +40,7 @@ class CreateProposalSpec extends Specification implements SampleUsers, SampleSup
 
   @Unroll
   def "should not be able to create a proposal with amount of food not being a natural number" () {
-    given: "there is a food"
+    given: "there is food"
       SupplierDto supplier = supplierFacade.addSupplier(newSupplier())
       FoodDto food = supplierFacade.addFoodToSupplierMenu(newFood(supplierId: supplier.id))
     when: "$JOHN wants to create a proposal with wrong amount of food equals: $amount"
@@ -51,12 +52,22 @@ class CreateProposalSpec extends Specification implements SampleUsers, SampleSup
   }
 
   def "should not be able to create a new proposal with a non-existing supplier" () {
+    given: "there is food"
+      SupplierDto supplier = supplierFacade.addSupplier(newSupplier())
+      FoodDto food = supplierFacade.addFoodToSupplierMenu(newFood(supplierId: supplier.id))
     when: "wants to create a new proposal"
-      orderFacade.createProposal(newProposal(supplierId: FAKE_SUPPLIER_ID))
+      orderFacade.createProposal(newProposal(supplierId: FAKE_SUPPLIER_ID, foodId: food.id))
     then: "proposal is not added due to wrong supplier"
       thrown(SupplierNotFound)
   }
 
-  //nie powinien dodac nie istniejacego food'a
+  def "should not create a new proposal with a non-existing food" () {
+    given: "there is a supplier"
+      SupplierDto supplier = supplierFacade.addSupplier(newSupplier())
+    when: "wants to create a new proposal"
+      orderFacade.createProposal(newProposal(foodId: FAKE_FOOD_ID, supplierId: supplier.id))
+    then: "proposal can not be created without a chosen food"
+      thrown(FoodNotFound)
+  }
 
 }

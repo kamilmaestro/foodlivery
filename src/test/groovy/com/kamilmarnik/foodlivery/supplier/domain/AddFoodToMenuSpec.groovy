@@ -33,9 +33,9 @@ class AddFoodToMenuSpec extends Specification implements SampleSuppliers, Sample
 
   @Unroll
   def "should not add a food with the wrong price" () {
-    given: "there is a supplier $PIZZA_RESTAURANT"
-      SupplierDto supplier = supplierFacade.addSupplier(newSupplier(name: PIZZA_RESTAURANT.name))
-    when: "wants to add a food to the menu of $PIZZA_RESTAURANT"
+    given: "there is a supplier"
+      SupplierDto supplier = supplierFacade.addSupplier(newSupplier())
+    when: "wants to add a food to the menu of this supplier"
       supplierFacade.addFoodToSupplierMenu(newFood(supplierId: supplier.id, price: price))
     then: "food is not added due to wrong price"
       thrown(InvalidFoodPrice)
@@ -44,10 +44,10 @@ class AddFoodToMenuSpec extends Specification implements SampleSuppliers, Sample
   }
 
   @Unroll
-  def "should store money in value with at most two decimal places" () {
+  def "should store price of food in a value with at most two decimal places" () {
     given: "there is a supplier"
-      SupplierDto supplier = supplierFacade.addSupplier(newSupplier(name: PIZZA_RESTAURANT.name))
-    expect: "added food contains price with at most two decimal places"
+      SupplierDto supplier = supplierFacade.addSupplier(newSupplier())
+    expect: "added food has price with at most two decimal places"
       supplierFacade.addFoodToSupplierMenu(newFood(supplierId: supplier.id, price: price))
           .price == returnedValue
     where:

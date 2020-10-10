@@ -2,6 +2,7 @@ package com.kamilmarnik.foodlivery.supplier.domain;
 
 import com.kamilmarnik.foodlivery.infrastructure.PageInfo;
 import com.kamilmarnik.foodlivery.supplier.dto.*;
+import com.kamilmarnik.foodlivery.supplier.exception.FoodNotFound;
 import com.kamilmarnik.foodlivery.supplier.exception.SupplierNotFound;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -31,11 +32,11 @@ public class SupplierFacade {
     return getSupplier(supplierId).dto();
   }
 
-  public FoodDto addFoodToSupplierMenu(AddFoodToMenuDto addedFood) {
-    checkIfSupplierExists(addedFood.getSupplierId());
-    Food toSave = foodCreator.from(addedFood);
+  public FoodDto addFoodToSupplierMenu(AddFoodToMenuDto foodToAdd) {
+    checkIfSupplierExists(foodToAdd.getSupplierId());
+    Food food = foodCreator.from(foodToAdd);
 
-    return foodRepository.save(toSave).dto();
+    return foodRepository.save(food).dto();
   }
 
   public Page<SupplierDto> findAllSuppliers(PageInfo pageInfo) {
@@ -43,7 +44,13 @@ public class SupplierFacade {
         .map(Supplier::dto);
   }
 
-  public void checkIfSupplierExists(long supplierId) {
+  public void checkIfFoodExists(long foodId, long supplierId) {
+    foodRepository.findById(foodId)
+        .orElseThrow(() -> new FoodNotFound("Can not find food with id: " + foodId));
+    getSupplier(supplierId);
+  }
+
+  private void checkIfSupplierExists(long supplierId) {
     getSupplier(supplierId);
   }
 

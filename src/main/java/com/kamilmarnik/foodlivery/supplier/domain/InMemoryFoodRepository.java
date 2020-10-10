@@ -80,8 +80,8 @@ class InMemoryFoodRepository implements FoodRepository {
   }
 
   @Override
-  public Optional<Food> findById(Long aLong) {
-    return Optional.empty();
+  public Optional<Food> findById(Long foodId) {
+    return Optional.ofNullable(values.get(foodId));
   }
 
   @Override
