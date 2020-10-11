@@ -50,7 +50,7 @@ public class SupplierFacade {
     getSupplier(supplierId);
   }
 
-  private void checkIfSupplierExists(long supplierId) {
+  public void checkIfSupplierExists(long supplierId) {
     getSupplier(supplierId);
   }
 

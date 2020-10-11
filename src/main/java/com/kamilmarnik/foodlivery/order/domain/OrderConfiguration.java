@@ -14,12 +14,13 @@ class OrderConfiguration {
   SupplierFacade supplierFacade;
 
   OrderFacade orderFacade(SupplierFacade supplierFacade) {
-    return orderFacade(new InMemoryProposalRepository(), supplierFacade);
+    return orderFacade(new InMemoryProposalRepository(), new InMemoryOrderRepository(), supplierFacade);
   }
 
-  OrderFacade orderFacade(ProposalRepository proposalRepository, SupplierFacade supplierFacade) {
+  OrderFacade orderFacade(ProposalRepository proposalRepository, OrderRepository orderRepository, SupplierFacade supplierFacade) {
     return OrderFacade.builder()
         .proposalRepository(proposalRepository)
+        .orderRepository(orderRepository)
         .supplierFacade(supplierFacade)
         .build();
   }

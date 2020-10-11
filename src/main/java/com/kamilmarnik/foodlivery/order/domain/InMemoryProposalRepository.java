@@ -5,11 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 class InMemoryProposalRepository implements ProposalRepository {
 
@@ -140,6 +138,13 @@ class InMemoryProposalRepository implements ProposalRepository {
   @Override
   public <S extends Proposal> boolean exists(Example<S> example) {
     return false;
+  }
+
+  @Override
+  public Set<Proposal> findAllBySupplierId(long supplierId) {
+    return values.values().stream()
+        .filter(proposal -> proposal.getOrderedFood().getSupplierId() == supplierId)
+        .collect(Collectors.toSet());
   }
 
 }

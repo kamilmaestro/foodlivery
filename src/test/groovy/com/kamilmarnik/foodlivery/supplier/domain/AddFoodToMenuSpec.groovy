@@ -1,5 +1,7 @@
 package com.kamilmarnik.foodlivery.supplier.domain
 
+import com.kamilmarnik.foodlivery.samples.SampleFood
+import com.kamilmarnik.foodlivery.samples.SampleSuppliers
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
 import com.kamilmarnik.foodlivery.supplier.exception.InvalidFoodPrice

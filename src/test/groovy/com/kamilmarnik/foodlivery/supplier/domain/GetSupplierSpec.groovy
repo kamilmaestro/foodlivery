@@ -1,6 +1,8 @@
 package com.kamilmarnik.foodlivery.supplier.domain
 
 import com.kamilmarnik.foodlivery.infrastructure.PageInfo
+import com.kamilmarnik.foodlivery.samples.SampleFood
+import com.kamilmarnik.foodlivery.samples.SampleSuppliers
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
 import com.kamilmarnik.foodlivery.supplier.exception.SupplierNotFound
 import org.springframework.data.domain.Page

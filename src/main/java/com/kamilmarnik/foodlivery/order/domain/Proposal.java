@@ -39,4 +39,13 @@ class Proposal {
         .build();
   }
 
+  Order makeOrder() {
+    return Order.builder()
+        .id(this.id)
+        .createdBy(this.createdBy)
+        .createdAt(this.createdAt)
+        .orderedFood(this.orderedFood)
+        .build();
+  }
+
 }

@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 
 trait SecurityContextProvider {
 
-  def createContext(UserDto user) {
+  void logInUser(UserDto user) {
     CustomUserDetails authenticatedUser = CustomUserDetails.builder()
         .userId(user.userId)
         .username(user.username)

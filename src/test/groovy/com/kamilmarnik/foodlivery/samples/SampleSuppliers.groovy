@@ -1,7 +1,9 @@
-package com.kamilmarnik.foodlivery.supplier.domain
+package com.kamilmarnik.foodlivery.samples
 
+import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade
 import com.kamilmarnik.foodlivery.supplier.dto.AddSupplierDto
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
+import groovy.transform.CompileStatic
 
 trait SampleSuppliers {
 
@@ -16,9 +18,9 @@ trait SampleSuppliers {
       "email" : "supplier@email.com"
   ]
 
-  SupplierDto PIZZA_RESTAURANT = createSupplierDto(PIZZA_RESTAURANT_ID, "Pizza Restaurant")
-  SupplierDto KEBAB_RESTAURANT = createSupplierDto(KEBAB_RESTAURANT_ID, "Kebab Restaurant")
-  SupplierDto APPLE_RESTAURANT = createSupplierDto(APPLE_RESTAURANT_ID, "Apple Restaurant")
+  static SupplierDto PIZZA_RESTAURANT = createSupplierDto(PIZZA_RESTAURANT_ID, "Pizza Restaurant")
+  static SupplierDto KEBAB_RESTAURANT = createSupplierDto(KEBAB_RESTAURANT_ID, "Kebab Restaurant")
+  static SupplierDto APPLE_RESTAURANT = createSupplierDto(APPLE_RESTAURANT_ID, "Apple Restaurant")
 
   static void withSampleSuppliers(SupplierFacade supplierFacade, SupplierDto ...suppliers) {
     suppliers.each { supplier ->

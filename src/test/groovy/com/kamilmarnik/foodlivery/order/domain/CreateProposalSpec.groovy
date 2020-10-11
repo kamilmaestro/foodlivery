@@ -1,28 +1,14 @@
 package com.kamilmarnik.foodlivery.order.domain
 
-import com.kamilmarnik.foodlivery.SecurityContextProvider
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto
-import com.kamilmarnik.foodlivery.samples.SampleUsers
-import com.kamilmarnik.foodlivery.supplier.domain.SampleFood
-import com.kamilmarnik.foodlivery.supplier.domain.SampleSuppliers
-import com.kamilmarnik.foodlivery.supplier.domain.SupplierConfiguration
-import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
 import com.kamilmarnik.foodlivery.supplier.exception.FoodNotFound
 import com.kamilmarnik.foodlivery.supplier.exception.IncorrectAmountOfFood
 import com.kamilmarnik.foodlivery.supplier.exception.SupplierNotFound
-import spock.lang.Specification
 import spock.lang.Unroll
 
-class CreateProposalSpec extends Specification implements SampleUsers, SampleSuppliers, SampleOrders, SampleFood, SecurityContextProvider {
-
-  private SupplierFacade supplierFacade = new SupplierConfiguration().supplierFacade()
-  private OrderFacade orderFacade = new OrderConfiguration().orderFacade(supplierFacade)
-
-  def setup() {
-    createContext(JOHN)
-  }
+class CreateProposalSpec extends BaseOrderSpec {
 
   def "should create a new proposal" () {
     given: "there is a supplier $KEBAB_RESTAURANT"

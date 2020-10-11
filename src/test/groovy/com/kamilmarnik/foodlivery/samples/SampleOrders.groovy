@@ -1,4 +1,4 @@
-package com.kamilmarnik.foodlivery.order.domain
+package com.kamilmarnik.foodlivery.samples
 
 import com.kamilmarnik.foodlivery.order.dto.AddProposalDto
 
