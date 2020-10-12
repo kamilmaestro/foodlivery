@@ -2,7 +2,6 @@ package com.kamilmarnik.foodlivery.order.domain;
 
 import com.kamilmarnik.foodlivery.order.dto.AddProposalDto;
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto;
-import com.kamilmarnik.foodlivery.supplier.dto.FoodDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -20,8 +19,8 @@ class Proposal {
 
   Long id;
   Long createdBy;
-  OrderedFood orderedFood;
   LocalDateTime createdAt;
+  OrderedFood orderedFood;
 
   Proposal(AddProposalDto addProposal) {
     this.createdAt = now();
@@ -34,7 +33,7 @@ class Proposal {
         .proposalId(this.id)
         .foodId(this.orderedFood.getFoodId())
         .supplierId(this.orderedFood.getSupplierId())
-        .userId(this.createdBy)
+        .createdBy(this.createdBy)
         .createdAt(this.createdAt)
         .build();
   }
@@ -45,6 +44,7 @@ class Proposal {
         .createdBy(this.createdBy)
         .createdAt(this.createdAt)
         .orderedFood(this.orderedFood)
+        .purchaserId(getLoggedUserId())
         .build();
   }
 

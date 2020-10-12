@@ -1,6 +1,5 @@
 package com.kamilmarnik.foodlivery.order.dto;
 
-import com.kamilmarnik.foodlivery.supplier.dto.FoodDto;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +15,7 @@ public final class ProposalDto {
   long proposalId;
   long foodId;
   long supplierId;
-  long userId;
+  long createdBy;
   LocalDateTime createdAt;
 
 }

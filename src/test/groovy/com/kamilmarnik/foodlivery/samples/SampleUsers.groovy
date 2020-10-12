@@ -6,7 +6,7 @@ trait SampleUsers {
 
   static final UserDto JOHN = createUserDto(11l, "John", "john@email.com")
   static final UserDto MARC = createUserDto(12l, "Marc", "marc@email.com")
-  static final UserDto KEVIN = createUserDto(12l, "Kevin", "kevin@email.com")
+  static final UserDto KEVIN = createUserDto(13l, "Kevin", "kevin@email.com")
 
   private static UserDto createUserDto(Long id, String name, String email) {
     UserDto.builder()

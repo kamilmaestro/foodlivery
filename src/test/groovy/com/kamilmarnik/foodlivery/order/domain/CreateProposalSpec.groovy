@@ -19,7 +19,7 @@ class CreateProposalSpec extends BaseOrderSpec {
       ProposalDto proposal = orderFacade.createProposal(newProposal(supplierId: supplier.id, foodId: addedFood.id))
     then: "proposal created by $JOHN is added"
       proposal.supplierId == supplier.id
-      proposal.userId == JOHN.userId
+      proposal.createdBy == JOHN.userId
       proposal.createdAt != null
       proposal.foodId == addedFood.id
   }

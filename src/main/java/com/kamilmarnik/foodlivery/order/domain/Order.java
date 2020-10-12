@@ -15,11 +15,19 @@ class Order {
 
   Long id;
   Long createdBy;
-  OrderedFood orderedFood;
   LocalDateTime createdAt;
+  OrderedFood orderedFood;
+  Long purchaserId;
 
   OrderDto dto() {
-    return OrderDto.builder().id(this.id).build();
+    return OrderDto.builder()
+        .id(this.id)
+        .createdBy(this.createdBy)
+        .createdAt(this.createdAt)
+        .foodId(this.orderedFood.getFoodId())
+        .supplierId(this.orderedFood.getSupplierId())
+        .purchaserId(this.purchaserId)
+        .build();
   }
 
 }

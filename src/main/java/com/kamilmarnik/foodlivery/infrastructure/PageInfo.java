@@ -14,6 +14,8 @@ public final class PageInfo {
   private static final int DEFAULT_PAGE_NUMBER = 0;
   private static final int DEFAULT_PAGE_SIZE = 10;
 
+  public static PageInfo DEFAULT = new PageInfo(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
+
   Integer pageNumber;
   Integer pageSize;
 
