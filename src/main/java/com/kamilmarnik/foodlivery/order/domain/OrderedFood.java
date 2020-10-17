@@ -13,13 +13,11 @@ import java.util.Optional;
 final class OrderedFood {
 
   long foodId;
-  long supplierId;
   AmountOfFood amount;
 
-  OrderedFood(long foodId, long supplierId, Integer amount) {
+  OrderedFood(long foodId, Integer amount) {
     this.foodId = foodId;
     this.amount = new AmountOfFood(amount);
-    this.supplierId = supplierId;
   }
 
 }

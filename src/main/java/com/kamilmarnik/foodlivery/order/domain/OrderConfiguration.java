@@ -7,21 +7,16 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 class OrderConfiguration {
 
-  @Autowired
-  ProposalRepository proposalRepository;
-
-  @Autowired
-  SupplierFacade supplierFacade;
-
   OrderFacade orderFacade(SupplierFacade supplierFacade) {
-    return orderFacade(new InMemoryProposalRepository(), new InMemoryOrderRepository(), supplierFacade);
+    return orderFacade(supplierFacade, new InMemoryProposalRepository(), new InMemoryOrderRepository());
   }
 
-  OrderFacade orderFacade(ProposalRepository proposalRepository, OrderRepository orderRepository, SupplierFacade supplierFacade) {
+  OrderFacade orderFacade(SupplierFacade supplierFacade, ProposalRepository proposalRepository, OrderRepository orderRepository) {
     return OrderFacade.builder()
+        .supplierFacade(supplierFacade)
         .proposalRepository(proposalRepository)
         .orderRepository(orderRepository)
-        .supplierFacade(supplierFacade)
+        .orderCreator(new OrderCreator())
         .build();
   }
 

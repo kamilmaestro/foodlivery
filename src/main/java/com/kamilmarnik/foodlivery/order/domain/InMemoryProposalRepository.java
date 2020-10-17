@@ -143,7 +143,7 @@ class InMemoryProposalRepository implements ProposalRepository {
   @Override
   public Set<Proposal> findAllBySupplierId(long supplierId) {
     return values.values().stream()
-        .filter(proposal -> proposal.getOrderedFood().getSupplierId() == supplierId)
+        .filter(proposal -> proposal.getSupplierId() == supplierId)
         .collect(Collectors.toSet());
   }
 

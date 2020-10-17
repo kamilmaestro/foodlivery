@@ -14,6 +14,7 @@ public final class ProposalDto {
 
   long proposalId;
   long foodId;
+  int foodAmount;
   long supplierId;
   long createdBy;
   LocalDateTime createdAt;

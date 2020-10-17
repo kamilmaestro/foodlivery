@@ -4,7 +4,6 @@ import org.springframework.data.domain.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -60,19 +59,30 @@ class InMemoryOrderRepository implements OrderRepository {
   @Override
   public Order save(Order order) {
     if (order.getId() == null || order.getId() == 0L) {
-      long supplierId = new Random().nextLong();
-      order = order.toBuilder()
-          .id(supplierId)
-          .build();
+      long orderId = new Random().nextLong();
+      order.setId(orderId);
     }
-    values.put(order.getId(), order);
+    final Set<UserOrder> userOrders = order.getUserOrders().stream()
+        .map(this::saveUserOrder)
+        .collect(Collectors.toSet());
+    final Order withUserOrders = order.toBuilder().userOrders(userOrders).build();
+    values.put(withUserOrders.getId(), withUserOrders);
 
-    return order;
+    return withUserOrders;
+  }
+
+  private UserOrder saveUserOrder(UserOrder userOrder) {
+    if (userOrder.getId() == null || userOrder.getId() == 0L) {
+      long orderId = new Random().nextLong();
+      userOrder.setId(orderId);
+    }
+
+    return userOrder;
   }
 
   @Override
-  public <S extends Order> List<S> saveAll(Iterable<S> orders) {
-    return StreamSupport.stream(orders.spliterator(), false)
+  public <S extends Order> List<S> saveAll(Iterable<S> userOrders) {
+    return StreamSupport.stream(userOrders.spliterator(), false)
         .map(order -> (S) save(order))
         .collect(Collectors.toList());
   }
@@ -143,12 +153,10 @@ class InMemoryOrderRepository implements OrderRepository {
   }
 
   @Override
-  public Page<Order> findAllBySupplierId(long supplierId, PageRequest pageRequest) {
-    final List<Order> orders = values.values().stream()
-        .filter(order -> order.getOrderedFood().getSupplierId() == supplierId)
-        .collect(Collectors.toList());
-
-    return new PageImpl<>(orders);
+  public Optional<Order> findBySupplierId(long supplierId) {
+    return values.values().stream()
+        .filter(order -> order.getSupplierId().equals(supplierId))
+        .findFirst();
   }
 
 }

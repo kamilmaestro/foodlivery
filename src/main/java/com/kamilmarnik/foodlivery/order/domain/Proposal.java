@@ -20,31 +20,28 @@ class Proposal {
   Long id;
   Long createdBy;
   LocalDateTime createdAt;
+  Long supplierId;
   OrderedFood orderedFood;
 
   Proposal(AddProposalDto addProposal) {
     this.createdAt = now();
     this.createdBy = getLoggedUserId();
-    this.orderedFood = new OrderedFood(addProposal.getFoodId(), addProposal.getSupplierId(), addProposal.getAmountOfFood());
+    this.supplierId = addProposal.getSupplierId();
+    this.orderedFood = new OrderedFood(addProposal.getFoodId(), addProposal.getAmountOfFood());
+  }
+
+  UserOrder makeOrder(String orderUuid) {
+    return new UserOrder(orderUuid, this.orderedFood, this.createdBy);
   }
 
   ProposalDto dto() {
     return ProposalDto.builder()
         .proposalId(this.id)
         .foodId(this.orderedFood.getFoodId())
-        .supplierId(this.orderedFood.getSupplierId())
+        .foodAmount(this.orderedFood.getAmount().getValue())
+        .supplierId(this.supplierId)
         .createdBy(this.createdBy)
         .createdAt(this.createdAt)
-        .build();
-  }
-
-  Order makeOrder() {
-    return Order.builder()
-        .id(this.id)
-        .createdBy(this.createdBy)
-        .createdAt(this.createdAt)
-        .orderedFood(this.orderedFood)
-        .purchaserId(getLoggedUserId())
         .build();
   }
 

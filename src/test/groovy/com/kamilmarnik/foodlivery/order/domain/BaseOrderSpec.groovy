@@ -10,6 +10,7 @@ import com.kamilmarnik.foodlivery.supplier.domain.SupplierConfiguration
 import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
+import com.kamilmarnik.foodlivery.user.dto.UserDto
 import spock.lang.Specification
 
 abstract class BaseOrderSpec extends Specification implements SampleUsers, SampleSuppliers, SampleOrders, SampleFood, SecurityContextProvider {
@@ -23,14 +24,21 @@ abstract class BaseOrderSpec extends Specification implements SampleUsers, Sampl
 
   ProposalDto addProposal(String supplierName) {
     SupplierDto supplier = supplierFacade.addSupplier(newSupplier(name: supplierName))
-    FoodDto food = supplierFacade.addFoodToSupplierMenu(newFood(supplierId: supplier.id))
-
-    return orderFacade.createProposal(newProposal(supplierId: supplier.id, foodId: food.id))
+    return addProposalForSupplier(supplier.id)
   }
 
-  ProposalDto addProposal(long supplierId) {
-    FoodDto food = supplierFacade.addFoodToSupplierMenu(newFood(supplierId: supplierId))
+  ProposalDto addProposal(String supplierName, UserDto createdBy) {
+    logInUser(createdBy)
+    return addProposal(supplierName)
+  }
 
+  ProposalDto addProposal(long supplierId, UserDto createdBy) {
+    logInUser(createdBy)
+    return addProposalForSupplier(supplierId)
+  }
+
+  private ProposalDto addProposalForSupplier(long supplierId) {
+    FoodDto food = supplierFacade.addFoodToSupplierMenu(newFood(supplierId: supplierId))
     return orderFacade.createProposal(newProposal(supplierId: supplierId, foodId: food.id))
   }
 
