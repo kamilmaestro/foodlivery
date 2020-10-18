@@ -8,11 +8,11 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -35,14 +35,14 @@ class Order {
     this.purchaserId = purchaserId;
     this.createdAt = now();
     this.userOrders = proposals.stream()
-        .map(proposal -> proposal.makeOrder(this.uuid))
-        .collect(Collectors.toSet());
+        .map(proposal -> proposal.makeOrderForUser(this.uuid))
+        .collect(toSet());
   }
 
   OrderDto dto() {
     final List<UserOrderDto> userOrders = this.userOrders.stream()
         .map(UserOrder::dto)
-        .collect(Collectors.toList());
+        .collect(toList());
 
     return OrderDto.builder()
         .id(this.id)

@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toSet;
+
 public class JwtTokenVerifier extends OncePerRequestFilter {
 
   private final SecretKey secretKey;
@@ -53,7 +55,7 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
       List<Map<String, String>> authorities = (List<Map<String, String>>) body.get("authorities");
       Set<SimpleGrantedAuthority> simpleGrantedAuthorities = authorities.stream()
           .map(auth -> new SimpleGrantedAuthority(auth.get("authority")))
-          .collect(Collectors.toSet());
+          .collect(toSet());
 
       Authentication authentication = new UsernamePasswordAuthenticationToken(
           username, null, simpleGrantedAuthorities

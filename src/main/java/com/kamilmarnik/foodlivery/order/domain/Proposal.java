@@ -30,7 +30,7 @@ class Proposal {
     this.orderedFood = new OrderedFood(addProposal.getFoodId(), addProposal.getAmountOfFood());
   }
 
-  UserOrder makeOrder(String orderUuid) {
+  UserOrder makeOrderForUser(String orderUuid) {
     return new UserOrder(orderUuid, this.orderedFood, this.createdBy);
   }
 

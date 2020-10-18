@@ -1,13 +1,11 @@
 package com.kamilmarnik.foodlivery.order.domain
 
-import com.kamilmarnik.foodlivery.infrastructure.PageInfo
 import com.kamilmarnik.foodlivery.order.dto.OrderDto
 import com.kamilmarnik.foodlivery.order.dto.UserOrderDto
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto
 import com.kamilmarnik.foodlivery.order.exception.CanNotBePurchaser
 import com.kamilmarnik.foodlivery.order.exception.OrderForSupplierAlreadyExists
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
-import org.springframework.data.domain.Page
 
 class PurchaserSpec extends BaseOrderSpec {
 

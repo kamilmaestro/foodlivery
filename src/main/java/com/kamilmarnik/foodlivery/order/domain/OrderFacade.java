@@ -39,7 +39,9 @@ public class OrderFacade {
 
   private void checkIfOrderForSupplierAlreadyExists(long supplierId) {
     orderRepository.findBySupplierId(supplierId).ifPresent(order -> {
-      throw new OrderForSupplierAlreadyExists("Can not create another for the supplier with id: " + order.getSupplierId());
+      throw new OrderForSupplierAlreadyExists(
+          "Can not create another order for the supplier with id: " + order.getSupplierId()
+      );
     });
   }
 
