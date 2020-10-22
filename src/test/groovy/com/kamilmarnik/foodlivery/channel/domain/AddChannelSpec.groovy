@@ -2,20 +2,34 @@ package com.kamilmarnik.foodlivery.channel.domain
 
 import com.kamilmarnik.foodlivery.SecurityContextProvider
 import com.kamilmarnik.foodlivery.channel.dto.ChannelDto
+import com.kamilmarnik.foodlivery.channel.dto.ChannelMemberDto
+import com.kamilmarnik.foodlivery.channel.exception.ChannelNotFound
 import com.kamilmarnik.foodlivery.channel.exception.InvalidChannelName
+import com.kamilmarnik.foodlivery.channel.exception.InvalidInvitation
 import com.kamilmarnik.foodlivery.samples.SampleChannels
 import com.kamilmarnik.foodlivery.samples.SampleUsers
+import com.kamilmarnik.foodlivery.security.jwt.JwtConfig
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import javax.crypto.SecretKey
+import javax.crypto.spec.SecretKeySpec
+
 import static com.kamilmarnik.foodlivery.utils.TextGenerator.randomText
+import static io.jsonwebtoken.SignatureAlgorithm.HS256
+import static javax.xml.bind.DatatypeConverter.parseBase64Binary
 
 class AddChannelSpec extends Specification implements SampleUsers, SampleChannels, SecurityContextProvider {
 
-  ChannelFacade channelFacade = new ChannelConfiguration().channelFacade()
+  JwtConfig jwtConfig = Mock(JwtConfig.class)
+  String secretKeyValue = randomText(50)
+  SecretKey secretKey = new SecretKeySpec(parseBase64Binary(secretKeyValue), HS256.getJcaName())
+  ChannelFacade channelFacade = new ChannelConfiguration().channelFacade(jwtConfig, secretKey)
 
   def setup() {
     logInUser(JOHN)
+    jwtConfig.getSecretKey() >> secretKeyValue
+    jwtConfig.getTokenExpirationAfterMinutes() >> 10
   }
 
   def "should be able to create a new channel" () {
@@ -34,6 +48,28 @@ class AddChannelSpec extends Specification implements SampleUsers, SampleChannel
       thrown(InvalidChannelName)
     where:
       name << ["", null, "123", "    ", randomText(101)]
+  }
+
+  def "should be able to join a channel" () {
+    given: "there is a $KRAKOW channel created by $JOHN"
+      ChannelDto krakowChannel = channelFacade.createChannel(newChannel(name: KRAKOW.name))
+    and: "$JOHN generates a invitation to the $KRAKOW channel"
+      String invitation = channelFacade.generateInvitation(krakowChannel.id)
+    and: "$MARC is logged in"
+      logInUser(MARC)
+    when: "$MARC uses the invitation to join the $KRAKOW channel"
+      ChannelMemberDto channelMember = channelFacade.joinChannel(invitation)
+    then: "$MARC is a member of the $KRAKOW channel"
+      channelMember.channelId == krakowChannel.id
+      channelMember.memberId == MARC.userId
+      channelMember.joinedAt != null
+  }
+
+  def "should not join a non-existing channel" () {
+    when: "$MARC wants to join a non-existing channel"
+      channelFacade.joinChannel("fakeInvitation")
+    then: "$MARC has not joined any channel"
+      thrown(InvalidInvitation)
   }
 
 }

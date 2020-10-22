@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class JwtConfig {
   private String secretKey;
   private String tokenPrefix;
-  private int tokenExpirationAfterHours;
+  private int tokenExpirationAfterMinutes;
 
   public JwtConfig() {
   }
@@ -23,19 +23,19 @@ public class JwtConfig {
   }
 
   public String getTokenPrefix() {
-    return tokenPrefix;
+    return this.tokenPrefix;
   }
 
   public void setTokenPrefix(String tokenPrefix) {
     this.tokenPrefix = tokenPrefix;
   }
 
-  public int getTokenExpirationAfterHours() {
-    return tokenExpirationAfterHours;
+  public int getTokenExpirationAfterMinutes() {
+    return this.tokenExpirationAfterMinutes;
   }
 
-  public void setTokenExpirationAfterHours(int tokenExpirationAfterHours) {
-    this.tokenExpirationAfterHours = tokenExpirationAfterHours;
+  public void setTokenExpirationAfterMinutes(int tokenExpirationAfterMinutes) {
+    this.tokenExpirationAfterMinutes = tokenExpirationAfterMinutes;
   }
 
   public String getAuthorizationHeader() {

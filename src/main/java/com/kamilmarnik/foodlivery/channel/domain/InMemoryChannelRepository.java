@@ -79,8 +79,10 @@ class InMemoryChannelRepository implements ChannelRepository {
   }
 
   @Override
-  public Optional<Channel> findById(Long aLong) {
-    return Optional.empty();
+  public Optional<Channel> findById(Long id) {
+    return values.values().stream()
+        .filter(channel -> channel.getId().equals(id))
+        .findFirst();
   }
 
   @Override
@@ -141,6 +143,13 @@ class InMemoryChannelRepository implements ChannelRepository {
   @Override
   public <S extends Channel> boolean exists(Example<S> example) {
     return false;
+  }
+
+  @Override
+  public Optional<Channel> findByUuid(String channelUuid) {
+    return values.values().stream()
+        .filter(channel -> channel.getUuid().equals(channelUuid))
+        .findFirst();
   }
 
 }
