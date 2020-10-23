@@ -22,12 +22,14 @@ class Proposal {
   LocalDateTime createdAt;
   Long supplierId;
   OrderedFood orderedFood;
+  Long channelId;
 
   Proposal(AddProposalDto addProposal) {
     this.createdAt = now();
     this.createdBy = getLoggedUserId();
     this.supplierId = addProposal.getSupplierId();
     this.orderedFood = new OrderedFood(addProposal.getFoodId(), addProposal.getAmountOfFood());
+    this.channelId = addProposal.getChannelId();
   }
 
   UserOrder makeOrderForUser(String orderUuid) {
@@ -40,6 +42,7 @@ class Proposal {
         .foodId(this.orderedFood.getFoodId())
         .foodAmount(this.orderedFood.getAmount().getValue())
         .supplierId(this.supplierId)
+        .channelId(this.channelId)
         .createdBy(this.createdBy)
         .createdAt(this.createdAt)
         .build();

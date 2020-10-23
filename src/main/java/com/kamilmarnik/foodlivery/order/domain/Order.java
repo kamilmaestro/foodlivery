@@ -25,13 +25,15 @@ class Order {
   Long id;
   String uuid;
   Long supplierId;
+  Long channelId;
   Long purchaserId;
   LocalDateTime createdAt;
   Set<UserOrder> userOrders;
 
-  Order(Long supplierId, Long purchaserId, Set<Proposal> proposals) {
+  Order(long supplierId, long channelId, long purchaserId, Set<Proposal> proposals) {
     this.uuid = randomUUID().toString();
     this.supplierId = supplierId;
+    this.channelId = channelId;
     this.purchaserId = purchaserId;
     this.createdAt = now();
     this.userOrders = proposals.stream()
@@ -48,6 +50,7 @@ class Order {
         .id(this.id)
         .uuid(this.uuid)
         .supplierId(this.supplierId)
+        .channelId(this.channelId)
         .purchaserId(this.purchaserId)
         .createdAt(this.createdAt)
         .userOrders(userOrders)

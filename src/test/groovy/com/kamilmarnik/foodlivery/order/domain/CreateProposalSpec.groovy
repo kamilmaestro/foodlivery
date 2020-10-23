@@ -1,5 +1,6 @@
 package com.kamilmarnik.foodlivery.order.domain
 
+import com.kamilmarnik.foodlivery.channel.exception.ChannelNotFound
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto

@@ -13,5 +13,6 @@ public class AddProposalDto {
   long supplierId;
   long foodId;
   Integer amountOfFood;
+  long channelId;
 
 }

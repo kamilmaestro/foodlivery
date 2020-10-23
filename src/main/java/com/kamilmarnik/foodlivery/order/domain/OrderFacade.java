@@ -1,5 +1,6 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
+import com.kamilmarnik.foodlivery.channel.domain.ChannelFacade;
 import com.kamilmarnik.foodlivery.order.dto.AddProposalDto;
 import com.kamilmarnik.foodlivery.order.dto.OrderDto;
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto;
@@ -27,20 +28,20 @@ public class OrderFacade {
     return proposalRepository.save(proposal).dto();
   }
 
-  public OrderDto becomePurchaser(long supplierId) {
+  public OrderDto becomePurchaser(long supplierId, long channelId) {
     supplierFacade.checkIfSupplierExists(supplierId);
-    checkIfOrderForSupplierAlreadyExists(supplierId);
+    checkIfOrderForSupplierAlreadyExists(supplierId, channelId);
     final Set<Proposal> supplierProposals = proposalRepository.findAllBySupplierId(supplierId);
-    final Order order = orderCreator.makeOrderForSupplier(supplierId, supplierProposals);
+    final Order order = orderCreator.makeOrderForSupplier(supplierId, supplierProposals, channelId);
     orderRepository.save(order);
 
     return order.dto();
   }
 
-  private void checkIfOrderForSupplierAlreadyExists(long supplierId) {
-    orderRepository.findBySupplierId(supplierId).ifPresent(order -> {
+  private void checkIfOrderForSupplierAlreadyExists(long supplierId, long channelId) {
+    orderRepository.findBySupplierIdAndChannelId(supplierId, channelId).ifPresent(order -> {
       throw new OrderForSupplierAlreadyExists(
-          "Can not create another order for the supplier with id: " + order.getSupplierId()
+          "Can not create another order in this channel for the supplier with id: " + order.getSupplierId()
       );
     });
   }

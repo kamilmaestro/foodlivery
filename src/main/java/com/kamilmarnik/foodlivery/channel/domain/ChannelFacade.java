@@ -23,8 +23,11 @@ public class ChannelFacade {
         .uuid(UUID.randomUUID().toString())
         .createdBy(getLoggedUserId())
         .build();
+    final Channel savedChannel = channelRepository.save(channel);
+    final ChannelMember channelMember = savedChannel.join();
+    channelMemberRepository.save(channelMember);
 
-    return channelRepository.save(channel).dto();
+    return savedChannel.dto();
   }
 
   public String generateInvitation(long channelId) {

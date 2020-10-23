@@ -1,5 +1,6 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
+import com.kamilmarnik.foodlivery.channel.domain.ChannelFacade;
 import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

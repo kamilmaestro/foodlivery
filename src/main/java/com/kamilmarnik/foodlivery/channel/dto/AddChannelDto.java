@@ -11,6 +11,5 @@ import lombok.experimental.FieldDefaults;
 public final class AddChannelDto {
 
     String name;
-    String identifier;
 
 }

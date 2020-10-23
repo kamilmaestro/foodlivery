@@ -12,9 +12,9 @@ import static java.time.LocalDateTime.now;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 final class OrderCreator {
 
-  Order makeOrderForSupplier(long supplierId, Set<Proposal> supplierProposals) {
+  Order makeOrderForSupplier(long supplierId, Set<Proposal> supplierProposals, long channelId) {
     checkIfUserCanBePurchaser(supplierProposals);
-    return new Order(supplierId, getLoggedUserId(), supplierProposals);
+    return new Order(supplierId, channelId, getLoggedUserId(), supplierProposals);
   }
 
   private void checkIfUserCanBePurchaser(Set<Proposal> proposals) {

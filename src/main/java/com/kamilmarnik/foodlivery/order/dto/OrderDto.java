@@ -16,6 +16,7 @@ public final class OrderDto {
   long id;
   String uuid;
   long supplierId;
+  long channelId;
   long purchaserId;
   LocalDateTime createdAt;
   List<UserOrderDto> userOrders;
