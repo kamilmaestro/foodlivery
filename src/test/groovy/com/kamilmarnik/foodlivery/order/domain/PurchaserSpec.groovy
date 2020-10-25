@@ -1,7 +1,7 @@
 package com.kamilmarnik.foodlivery.order.domain
 
 import com.kamilmarnik.foodlivery.channel.dto.ChannelDto
-import com.kamilmarnik.foodlivery.order.dto.OrderDto
+import com.kamilmarnik.foodlivery.order.dto.AcceptedOrderDto
 import com.kamilmarnik.foodlivery.order.dto.UserOrderDto
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto
 import com.kamilmarnik.foodlivery.order.exception.CanNotBePurchaser
@@ -15,7 +15,7 @@ class PurchaserSpec extends BaseOrderSpec {
     given: "$JOHN creates a proposal with food from the $PIZZA_RESTAURANT"
       ProposalDto proposal = addProposal(PIZZA_RESTAURANT.name)
     when: "$JOHN applies himself as the purchaser for this supplier"
-      OrderDto order = orderFacade.becomePurchaser(proposal.supplierId, proposal.channelId)
+      AcceptedOrderDto order = orderFacade.becomePurchaser(proposal.supplierId, proposal.channelId)
     then: "$JOHN is a purchaser for orders connected with $PIZZA_RESTAURANT"
       order.purchaserId == JOHN.userId
       order.supplierId == proposal.supplierId
@@ -92,7 +92,7 @@ class PurchaserSpec extends BaseOrderSpec {
     and: "$JOHN has created a proposal for the $PIZZA_RESTAURANT in the $WARSAW channel"
       orderFacade.createProposal(newProposal(supplierId: supplier.id, channelId: warsaw.id, foodId: food.id))
     expect: "$JOHN is able to become a purchaser for the $PIZZA_RESTAURANT in the $WARSAW channel"
-      OrderDto order = orderFacade.becomePurchaser(supplier.id, warsaw.id)
+      AcceptedOrderDto order = orderFacade.becomePurchaser(supplier.id, warsaw.id)
       order.supplierId == supplier.id
       order.purchaserId == JOHN.userId
       order.channelId == warsaw.id

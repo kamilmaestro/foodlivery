@@ -25,8 +25,8 @@ class Proposal {
   Long channelId;
 
   Proposal(AddProposalDto addProposal) {
-    this.createdAt = now();
     this.createdBy = getLoggedUserId();
+    this.createdAt = now();
     this.supplierId = addProposal.getSupplierId();
     this.orderedFood = new OrderedFood(addProposal.getFoodId(), addProposal.getAmountOfFood());
     this.channelId = addProposal.getChannelId();

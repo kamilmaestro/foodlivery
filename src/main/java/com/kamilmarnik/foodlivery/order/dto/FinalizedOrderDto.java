@@ -17,7 +17,7 @@ public final class FinalizedOrderDto {
   long supplierId;
   long channelId;
   long purchaserId;
-  LocalDateTime finalizedAt;
+  LocalDateTime createdAt;
   List<UserOrderDto> userOrders;
 
 }

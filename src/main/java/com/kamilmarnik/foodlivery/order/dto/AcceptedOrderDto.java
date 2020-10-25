@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public final class OrderDto {
+public final class AcceptedOrderDto {
 
   long id;
   String uuid;

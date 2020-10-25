@@ -1,9 +1,8 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
-import com.kamilmarnik.foodlivery.channel.domain.ChannelFacade;
 import com.kamilmarnik.foodlivery.order.dto.AddProposalDto;
 import com.kamilmarnik.foodlivery.order.dto.FinalizedOrderDto;
-import com.kamilmarnik.foodlivery.order.dto.OrderDto;
+import com.kamilmarnik.foodlivery.order.dto.AcceptedOrderDto;
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto;
 import com.kamilmarnik.foodlivery.order.exception.OrderForSupplierAlreadyExists;
 import com.kamilmarnik.foodlivery.order.exception.OrderNotFound;
@@ -14,6 +13,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
 
+import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.ORDERED;
+
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderFacade {
@@ -21,7 +22,6 @@ public class OrderFacade {
   SupplierFacade supplierFacade;
   ProposalRepository proposalRepository;
   OrderRepository orderRepository;
-  FinalizedOrderRepository finalizedOrderRepository;
   OrderCreator orderCreator;
 
   public ProposalDto createProposal(AddProposalDto addProposal) {
@@ -31,35 +31,32 @@ public class OrderFacade {
     return proposalRepository.save(proposal).dto();
   }
 
-  public OrderDto becomePurchaser(long supplierId, long channelId) {
+  public AcceptedOrderDto becomePurchaser(long supplierId, long channelId) {
     supplierFacade.checkIfSupplierExists(supplierId);
     checkIfOrderForSupplierAlreadyExists(supplierId, channelId);
     final Set<Proposal> supplierProposals = proposalRepository.findAllBySupplierId(supplierId);
-    final Order order = orderCreator.makeOrderForSupplier(supplierId, supplierProposals, channelId);
-    orderRepository.save(order);
+    final AcceptedOrder order = orderCreator.makeOrderForSupplier(supplierId, supplierProposals, channelId);
 
-    return order.dto();
+    return orderRepository.saveAccepted(order).acceptedDto();
   }
 
   public FinalizedOrderDto finalizeOrder(long orderId) {
-    final Order order = getOrder(orderId);
+    final AcceptedOrder order = getAcceptedOrder(orderId);
     final FinalizedOrder finalizedOrder = order.finalizeOrder();
-    finalizedOrderRepository.save(finalizedOrder);
 
-    return finalizedOrder.dto();
+    return orderRepository.saveFinalized(finalizedOrder).finalizedDto();
   }
 
   private void checkIfOrderForSupplierAlreadyExists(long supplierId, long channelId) {
-    orderRepository.findBySupplierIdAndChannelId(supplierId, channelId).ifPresent(order -> {
+    orderRepository.findBySupplierIdAndChannelIdAndStatus(supplierId, channelId, ORDERED).ifPresent(order -> {
       throw new OrderForSupplierAlreadyExists(
           "Can not create another order in this channel for the supplier with id: " + order.getSupplierId()
       );
     });
   }
 
-  private Order getOrder(long orderId) {
-    return orderRepository.findById(orderId)
-        .orElseThrow(() -> new OrderNotFound("Can not find an order with id: " + orderId));
+  private AcceptedOrder getAcceptedOrder(Long orderId) {
+    return orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFound(orderId));
   }
 
 }

@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AddProposalDto {
+public final class AddProposalDto {
 
   long supplierId;
   long foodId;
