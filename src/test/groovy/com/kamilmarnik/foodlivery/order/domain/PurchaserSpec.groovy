@@ -27,7 +27,6 @@ class PurchaserSpec extends BaseOrderSpec {
       johnOrder.foodId == proposal.foodId
       johnOrder.foodAmount == proposal.foodAmount
       johnOrder.orderedFor == JOHN.userId
-      johnOrder.createdAt != null
   }
 
   def "should not become a purchaser when has not previously created a proposal" () {

@@ -88,8 +88,10 @@ class InMemoryOrderRepository implements OrderRepository {
   }
 
   @Override
-  public Optional<Order> findById(Long aLong) {
-    return Optional.empty();
+  public Optional<Order> findById(Long id) {
+    return values.values().stream()
+        .filter(order -> order.getId().equals(id))
+        .findFirst();
   }
 
   @Override

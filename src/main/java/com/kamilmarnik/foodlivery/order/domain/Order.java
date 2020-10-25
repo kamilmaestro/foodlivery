@@ -5,10 +5,13 @@ import com.kamilmarnik.foodlivery.order.dto.UserOrderDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
+import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.ORDERED;
 import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
@@ -28,6 +31,10 @@ class Order {
   Long channelId;
   Long purchaserId;
   LocalDateTime createdAt;
+
+  @Enumerated(EnumType.STRING)
+  OrderStatus status = ORDERED;
+
   Set<UserOrder> userOrders;
 
   Order(long supplierId, long channelId, long purchaserId, Set<Proposal> proposals) {
@@ -39,6 +46,10 @@ class Order {
     this.userOrders = proposals.stream()
         .map(proposal -> proposal.makeOrderForUser(this.uuid))
         .collect(toSet());
+  }
+
+  FinalizedOrder finalizeOrder() {
+    return new FinalizedOrder(this);
   }
 
   OrderDto dto() {

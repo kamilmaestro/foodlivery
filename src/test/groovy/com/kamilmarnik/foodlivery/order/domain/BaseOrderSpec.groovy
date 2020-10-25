@@ -2,7 +2,6 @@ package com.kamilmarnik.foodlivery.order.domain
 
 import com.kamilmarnik.foodlivery.SecurityContextProvider
 import com.kamilmarnik.foodlivery.channel.domain.BaseChannelSpec
-import com.kamilmarnik.foodlivery.channel.dto.ChannelDto
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto
 import com.kamilmarnik.foodlivery.samples.SampleChannels
 import com.kamilmarnik.foodlivery.samples.SampleFood
@@ -19,16 +18,19 @@ abstract class BaseOrderSpec extends BaseChannelSpec implements SampleUsers, Sam
   SupplierFacade supplierFacade = new SupplierConfiguration().supplierFacade()
   OrderFacade orderFacade = new OrderConfiguration().orderFacade(supplierFacade)
 
+  static Long CHANNEL_ID = null
+
   def setup() {
     logInUser(JOHN)
+    CHANNEL_ID = channelFacade.createChannel(newChannel()).id
   }
 
   ProposalDto addProposal(String supplierName) {
-    return addProposal(supplierName, createChannel().id)
+    return addProposal(supplierName, CHANNEL_ID)
   }
 
   ProposalDto addProposal(long supplierId) {
-    return addProposalForSupplier(supplierId, createChannel().id)
+    return addProposalForSupplier(supplierId, CHANNEL_ID)
   }
 
   ProposalDto addProposal(long supplierId, long channelId) {
@@ -43,10 +45,6 @@ abstract class BaseOrderSpec extends BaseChannelSpec implements SampleUsers, Sam
   private ProposalDto addProposalForSupplier(long supplierId, long channelId) {
     FoodDto food = supplierFacade.addFoodToSupplierMenu(newFood(supplierId: supplierId))
     return orderFacade.createProposal(newProposal(supplierId: supplierId, foodId: food.id, channelId: channelId))
-  }
-
-  private ChannelDto createChannel() {
-    return channelFacade.createChannel(newChannel())
   }
 
 }

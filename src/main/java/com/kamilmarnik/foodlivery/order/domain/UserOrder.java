@@ -20,13 +20,11 @@ class UserOrder {
   String orderUuid;
   OrderedFood orderedFood;
   Long orderedFor;
-  LocalDateTime createdAt;
 
   UserOrder(String orderUuid, OrderedFood orderedFood, Long orderedFor) {
     this.orderUuid = orderUuid;
     this.orderedFood = orderedFood;
     this.orderedFor = orderedFor;
-    this.createdAt = now();
   }
 
   UserOrderDto dto() {
@@ -36,7 +34,6 @@ class UserOrder {
         .foodId(this.orderedFood.getFoodId())
         .foodAmount(this.orderedFood.getAmount().getValue())
         .orderedFor(this.orderedFor)
-        .createdAt(this.createdAt)
         .build();
   }
 

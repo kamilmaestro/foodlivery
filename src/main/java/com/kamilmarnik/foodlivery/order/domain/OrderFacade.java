@@ -2,9 +2,11 @@ package com.kamilmarnik.foodlivery.order.domain;
 
 import com.kamilmarnik.foodlivery.channel.domain.ChannelFacade;
 import com.kamilmarnik.foodlivery.order.dto.AddProposalDto;
+import com.kamilmarnik.foodlivery.order.dto.FinalizedOrderDto;
 import com.kamilmarnik.foodlivery.order.dto.OrderDto;
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto;
 import com.kamilmarnik.foodlivery.order.exception.OrderForSupplierAlreadyExists;
+import com.kamilmarnik.foodlivery.order.exception.OrderNotFound;
 import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,6 +21,7 @@ public class OrderFacade {
   SupplierFacade supplierFacade;
   ProposalRepository proposalRepository;
   OrderRepository orderRepository;
+  FinalizedOrderRepository finalizedOrderRepository;
   OrderCreator orderCreator;
 
   public ProposalDto createProposal(AddProposalDto addProposal) {
@@ -38,12 +41,25 @@ public class OrderFacade {
     return order.dto();
   }
 
+  public FinalizedOrderDto finalizeOrder(long orderId) {
+    final Order order = getOrder(orderId);
+    final FinalizedOrder finalizedOrder = order.finalizeOrder();
+    finalizedOrderRepository.save(finalizedOrder);
+
+    return finalizedOrder.dto();
+  }
+
   private void checkIfOrderForSupplierAlreadyExists(long supplierId, long channelId) {
     orderRepository.findBySupplierIdAndChannelId(supplierId, channelId).ifPresent(order -> {
       throw new OrderForSupplierAlreadyExists(
           "Can not create another order in this channel for the supplier with id: " + order.getSupplierId()
       );
     });
+  }
+
+  private Order getOrder(long orderId) {
+    return orderRepository.findById(orderId)
+        .orElseThrow(() -> new OrderNotFound("Can not find an order with id: " + orderId));
   }
 
 }
