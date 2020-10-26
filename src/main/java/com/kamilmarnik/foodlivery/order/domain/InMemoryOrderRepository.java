@@ -163,4 +163,11 @@ class InMemoryOrderRepository implements OrderRepository {
         ).findFirst();
   }
 
+  @Override
+  public Optional<Order> findByIdAndStatus(long orderId, OrderStatus status) {
+    return values.values().stream()
+        .filter(order -> order.getId().equals(orderId) && order.getStatus().equals(status))
+        .findFirst();
+  }
+
 }

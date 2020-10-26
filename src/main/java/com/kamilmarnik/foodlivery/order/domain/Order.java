@@ -77,6 +77,12 @@ class Order implements AcceptedOrder, FinalizedOrder {
   }
 
   @Override
+  public FinalizedOrder removeUserOrder(long userOrderId) {
+    this.userOrders.removeIf(userOrder -> userOrder.getId().equals(userOrderId));
+    return new Order(this);
+  }
+
+  @Override
   public AcceptedOrderDto acceptedDto() {
     final List<UserOrderDto> userOrders = this.userOrders.stream()
         .map(UserOrder::dto)

@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
 
+import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.FINALIZED;
 import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.ORDERED;
 
 @Builder
@@ -41,10 +42,17 @@ public class OrderFacade {
   }
 
   public FinalizedOrderDto finalizeOrder(long orderId) {
-    final AcceptedOrder order = getAcceptedOrder(orderId);
+    final AcceptedOrder order = getOrder(orderId, ORDERED);
     final FinalizedOrder finalizedOrder = order.finalizeOrder();
 
     return orderRepository.saveFinalized(finalizedOrder).finalizedDto();
+  }
+
+  public FinalizedOrderDto removeUserOrder(long userOrderId, long orderId) {
+    final FinalizedOrder finalizedOrder = getOrder(orderId, FINALIZED);
+    final FinalizedOrder withoutRemovedUserOrder = finalizedOrder.removeUserOrder(userOrderId);
+
+    return orderRepository.saveFinalized(withoutRemovedUserOrder).finalizedDto();
   }
 
   private void checkIfOrderForSupplierAlreadyExists(long supplierId, long channelId) {
@@ -55,8 +63,9 @@ public class OrderFacade {
     });
   }
 
-  private AcceptedOrder getAcceptedOrder(Long orderId) {
-    return orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFound(orderId));
+  private Order getOrder(Long orderId, OrderStatus status) {
+    return orderRepository.findByIdAndStatus(orderId, status)
+        .orElseThrow(() -> new OrderNotFound(orderId, status.name()));
   }
 
 }

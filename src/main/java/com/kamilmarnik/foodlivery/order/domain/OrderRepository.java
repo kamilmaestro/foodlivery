@@ -11,6 +11,8 @@ interface OrderRepository extends JpaRepository<Order, Long> {
 
   Optional<Order> findBySupplierIdAndChannelIdAndStatus(long supplierId, long channelId, OrderStatus status);
 
+  Optional<Order> findByIdAndStatus(long orderId, OrderStatus status);
+
   @SuppressWarnings("unchecked")
   default <T extends AcceptedOrder> T saveAccepted(T order) {
     requireNonNull(order);
