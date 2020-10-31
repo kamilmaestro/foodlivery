@@ -4,11 +4,14 @@ import com.kamilmarnik.foodlivery.supplier.exception.InvalidFoodPrice;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import java.math.BigDecimal;
 import java.util.Optional;
 
 import static java.math.RoundingMode.HALF_UP;
 
+@Embeddable
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 final class Money {
 

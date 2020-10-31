@@ -7,8 +7,7 @@ import com.kamilmarnik.foodlivery.order.exception.OrderFinalizationForbidden;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -21,24 +20,41 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
+@Entity
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "orders")
 class Order implements AcceptedOrder, FinalizedOrder {
 
   @Setter(value = AccessLevel.PACKAGE)
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
+
+  @Column(name = "uuid")
   String uuid;
+
+  @Column(name = "supplier_id")
   Long supplierId;
+
+  @Column(name = "channel_id")
   Long channelId;
+
+  @Column(name = "purchaser_id")
   Long purchaserId;
+
+  @Column(name = "created_at")
   LocalDateTime createdAt;
 
   @Enumerated(EnumType.STRING)
+  @Column(name = "status")
   OrderStatus status;
 
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  @JoinColumn(name = "order_uuid", updatable = false, insertable = false)
   Set<UserOrder> userOrders;
 
   private Order(long supplierId, long channelId, long purchaserId, OrderStatus status, Set<Proposal> proposals) {

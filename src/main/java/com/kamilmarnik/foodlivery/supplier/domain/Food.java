@@ -1,21 +1,33 @@
 package com.kamilmarnik.foodlivery.supplier.domain;
 
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 
+@Entity
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true)
 @Getter(AccessLevel.PACKAGE)
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "food")
 class Food {
 
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
+
+  @Column(name = "name")
   String name;
+
+  @Column(name = "supplier_id")
   Long supplierId;
+
+  @Embedded
+  @AttributeOverride(name = "price", column = @Column(name = "price"))
   Money price;
 
   FoodDto dto() {

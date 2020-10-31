@@ -5,23 +5,42 @@ import com.kamilmarnik.foodlivery.order.dto.ProposalDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 import static com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUserGetter.getLoggedUserId;
 import static java.time.LocalDateTime.now;
 
+@Entity
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Table(name = "food")
 class Proposal {
 
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
+
+  @Column(name = "created_by")
   Long createdBy;
+
+  @Column(name = "created_at")
   LocalDateTime createdAt;
+
+  @Column(name = "supplier_id")
   Long supplierId;
+
+  @Embedded
+  @AttributeOverrides({
+      @AttributeOverride(name = "foodId", column = @Column(name = "food_id")),
+      @AttributeOverride(name = "amount.amount", column = @Column(name = "amount_of_food"))
+  })
   OrderedFood orderedFood;
+
+  @Column(name = "channel_id")
   Long channelId;
 
   Proposal(AddProposalDto addProposal) {

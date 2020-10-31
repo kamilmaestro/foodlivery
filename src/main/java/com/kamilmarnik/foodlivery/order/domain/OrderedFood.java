@@ -1,16 +1,14 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
-import com.kamilmarnik.foodlivery.supplier.domain.AmountOfFood;
-import com.kamilmarnik.foodlivery.supplier.exception.IncorrectAmountOfFood;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Objects;
-import java.util.Optional;
+import javax.persistence.Embeddable;
 
 import static java.util.Objects.requireNonNull;
 
+@Embeddable
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 final class OrderedFood {

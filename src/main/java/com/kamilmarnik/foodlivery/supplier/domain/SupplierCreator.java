@@ -17,7 +17,7 @@ final class SupplierCreator {
         .name(addSupplier.getName())
         .phoneNumber(addSupplier.getPhoneNumber())
         .email(addSupplier.getEmail())
-        .added(LocalDateTime.now())
+        .createdAt(LocalDateTime.now())
         .build();
   }
 

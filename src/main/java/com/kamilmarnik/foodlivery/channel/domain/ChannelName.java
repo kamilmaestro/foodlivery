@@ -5,10 +5,12 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.Embeddable;
 import java.util.Optional;
 
 import static org.springframework.util.StringUtils.hasText;
 
+@Embeddable
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 final class ChannelName {
 
