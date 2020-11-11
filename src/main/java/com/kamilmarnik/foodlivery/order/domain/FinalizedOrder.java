@@ -8,4 +8,6 @@ interface FinalizedOrder {
 
   FinalizedOrder removeUserOrder(long userOrderId);
 
+  FinishedOrder finishOrder();
+
 }

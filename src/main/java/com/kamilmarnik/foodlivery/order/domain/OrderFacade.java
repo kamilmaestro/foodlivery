@@ -1,9 +1,6 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
-import com.kamilmarnik.foodlivery.order.dto.AddProposalDto;
-import com.kamilmarnik.foodlivery.order.dto.FinalizedOrderDto;
-import com.kamilmarnik.foodlivery.order.dto.AcceptedOrderDto;
-import com.kamilmarnik.foodlivery.order.dto.ProposalDto;
+import com.kamilmarnik.foodlivery.order.dto.*;
 import com.kamilmarnik.foodlivery.order.exception.OrderForSupplierAlreadyExists;
 import com.kamilmarnik.foodlivery.order.exception.OrderNotFound;
 import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade;
@@ -13,8 +10,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
 
-import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.FINALIZED;
-import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.ORDERED;
+import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.*;
 
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -53,6 +49,13 @@ public class OrderFacade {
     final FinalizedOrder withoutRemovedUserOrder = finalizedOrder.removeUserOrder(userOrderId);
 
     return orderRepository.saveFinalized(withoutRemovedUserOrder).finalizedDto();
+  }
+
+  public FinishedOrderDto finishOrder(long orderId) {
+    final FinalizedOrder finalizedOrder = getOrder(orderId, FINALIZED);
+    final FinishedOrder finishedOrder = finalizedOrder.finishOrder();
+
+    return orderRepository.saveFinished(finishedOrder).finishedDto();
   }
 
   private void checkIfOrderForSupplierAlreadyExists(long supplierId, long channelId) {

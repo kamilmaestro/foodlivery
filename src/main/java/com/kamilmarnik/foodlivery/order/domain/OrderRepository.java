@@ -29,4 +29,12 @@ interface OrderRepository extends JpaRepository<Order, Long> {
     return (T) savedOrder;
   }
 
+  @SuppressWarnings("unchecked")
+  default <T extends FinishedOrder> T saveFinished(T order) {
+    requireNonNull(order);
+    final Order savedOrder = this.save((Order) order);
+
+    return (T) savedOrder;
+  }
+
 }

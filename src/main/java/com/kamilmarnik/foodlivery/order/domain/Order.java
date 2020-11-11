@@ -2,6 +2,7 @@ package com.kamilmarnik.foodlivery.order.domain;
 
 import com.kamilmarnik.foodlivery.order.dto.FinalizedOrderDto;
 import com.kamilmarnik.foodlivery.order.dto.AcceptedOrderDto;
+import com.kamilmarnik.foodlivery.order.dto.FinishedOrderDto;
 import com.kamilmarnik.foodlivery.order.dto.UserOrderDto;
 import com.kamilmarnik.foodlivery.order.exception.OrderFinalizationForbidden;
 import lombok.*;
@@ -13,8 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUserGetter.getLoggedUserId;
-import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.FINALIZED;
-import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.ORDERED;
+import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.*;
 import static java.time.LocalDateTime.now;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
@@ -27,7 +27,7 @@ import static java.util.stream.Collectors.toSet;
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "orders")
-class Order implements AcceptedOrder, FinalizedOrder {
+class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder {
 
   @Setter(value = AccessLevel.PACKAGE)
   @Id
@@ -69,14 +69,14 @@ class Order implements AcceptedOrder, FinalizedOrder {
         .collect(toSet());
   }
 
-  private Order(Order order) {
+  private Order(Order order, OrderStatus status) {
     this.id = order.getId();
     this.uuid = order.getUuid();
     this.supplierId = order.getSupplierId();
     this.channelId = order.getChannelId();
     this.purchaserId = order.getPurchaserId();
     this.createdAt = order.getCreatedAt();
-    this.status = FINALIZED;
+    this.status = status;
     this.userOrders = order.getUserOrders();
   }
 
@@ -89,13 +89,18 @@ class Order implements AcceptedOrder, FinalizedOrder {
     if (!getLoggedUserId().equals(this.purchaserId)) {
       throw new OrderFinalizationForbidden(this.id);
     }
-    return new Order(this);
+    return new Order(this, FINALIZED);
   }
 
   @Override
   public FinalizedOrder removeUserOrder(long userOrderId) {
     this.userOrders.removeIf(userOrder -> userOrder.getId().equals(userOrderId));
-    return new Order(this);
+    return new Order(this, FINALIZED);
+  }
+
+  @Override
+  public FinishedOrder finishOrder() {
+    return new Order(this, FINISHED);
   }
 
   @Override
@@ -128,6 +133,17 @@ class Order implements AcceptedOrder, FinalizedOrder {
         .purchaserId(this.purchaserId)
         .createdAt(this.createdAt)
         .userOrders(userOrders)
+        .build();
+  }
+
+  @Override
+  public FinishedOrderDto finishedDto() {
+    return FinishedOrderDto.builder()
+        .id(this.id)
+        .supplierId(this.supplierId)
+        .channelId(this.channelId)
+        .purchaserId(this.purchaserId)
+        .createdAt(this.createdAt)
         .build();
   }
 

@@ -2,6 +2,8 @@ package com.kamilmarnik.foodlivery.order.domain
 
 import com.kamilmarnik.foodlivery.SecurityContextProvider
 import com.kamilmarnik.foodlivery.channel.domain.BaseChannelSpec
+import com.kamilmarnik.foodlivery.order.dto.AcceptedOrderDto
+import com.kamilmarnik.foodlivery.order.dto.FinalizedOrderDto
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto
 import com.kamilmarnik.foodlivery.samples.SampleChannels
 import com.kamilmarnik.foodlivery.samples.SampleFood
@@ -23,6 +25,13 @@ abstract class BaseOrderSpec extends BaseChannelSpec implements SampleUsers, Sam
   def setup() {
     logInUser(JOHN)
     CHANNEL_ID = channelFacade.createChannel(newChannel()).id
+  }
+
+  FinalizedOrderDto newFinalizedOrder(String supplierName) {
+    ProposalDto proposal = addProposal(supplierName)
+    AcceptedOrderDto order = orderFacade.becomePurchaser(proposal.supplierId, proposal.channelId)
+
+    return orderFacade.finalizeOrder(order.id)
   }
 
   ProposalDto addProposal(String supplierName) {
