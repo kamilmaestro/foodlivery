@@ -18,10 +18,11 @@ public class UserFacade {
   public UserDto registerUser(RegistrationRequest registrationRequest) {
     User toSave = User.builder()
         .username(registrationRequest.getUsername())
-        .password(registrationRequest.getPassword())
+        .password(passwordEncoder.encode(registrationRequest.getPassword()))
         .email(registrationRequest.getEmail())
         .role(User.UserRole.REGISTERED)
         .build();
+
     return userRepository.save(toSave).dto();
   }
 
