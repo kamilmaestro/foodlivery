@@ -53,6 +53,7 @@ class Image {
 
   ImageUploadedDto toUploadImageResponse(long imageSize) {
     return ImageUploadedDto.builder()
+        .id(this.id)
         .fileName(this.fileName)
         .fileType(this.fileType)
         .fileDownloadUrl(getImageDownloadUrl())

@@ -12,7 +12,7 @@ import java.util.Optional;
 public final class PageInfo {
 
   private static final int DEFAULT_PAGE_NUMBER = 0;
-  private static final int DEFAULT_PAGE_SIZE = 10;
+  private static final int DEFAULT_PAGE_SIZE = 20;
 
   public static PageInfo DEFAULT = new PageInfo(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
 

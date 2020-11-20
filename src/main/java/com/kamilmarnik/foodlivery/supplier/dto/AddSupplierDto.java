@@ -12,6 +12,7 @@ public final class AddSupplierDto {
 
   String name;
   String phoneNumber;
-  String email;
+  String address;
+  Long imageId;
 
 }

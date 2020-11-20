@@ -9,6 +9,7 @@ final class FoodCreator {
         .name(addFood.getName())
         .supplierId(addFood.getSupplierId())
         .price(new Money(addFood.getPrice()))
+        .imageId(addFood.getImageId())
         .build();
   }
 

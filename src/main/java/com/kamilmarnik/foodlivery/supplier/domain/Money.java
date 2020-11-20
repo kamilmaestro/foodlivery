@@ -2,6 +2,7 @@ package com.kamilmarnik.foodlivery.supplier.domain;
 
 import com.kamilmarnik.foodlivery.supplier.exception.InvalidFoodPrice;
 import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Column;
@@ -11,8 +12,9 @@ import java.util.Optional;
 
 import static java.math.RoundingMode.HALF_UP;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Embeddable
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 final class Money {
 
   private static final int DECIMAL_PLACES = 2;

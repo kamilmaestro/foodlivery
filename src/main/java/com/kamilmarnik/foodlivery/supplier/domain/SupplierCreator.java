@@ -16,7 +16,8 @@ final class SupplierCreator {
     return Supplier.builder()
         .name(addSupplier.getName())
         .phoneNumber(addSupplier.getPhoneNumber())
-        .email(addSupplier.getEmail())
+        .address(addSupplier.getAddress())
+        .imageId(addSupplier.getImageId())
         .createdAt(LocalDateTime.now())
         .build();
   }

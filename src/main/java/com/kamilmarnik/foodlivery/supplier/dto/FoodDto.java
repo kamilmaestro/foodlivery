@@ -18,5 +18,6 @@ public final class FoodDto {
   String name;
   long supplierId;
   double price;
+  Long imageId;
 
 }

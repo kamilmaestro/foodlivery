@@ -15,7 +15,7 @@ trait SampleSuppliers {
   private static final Map NEW_SUPPLIER_DEFAULT_VALUES = [
       "name" : "Supplier",
       "phoneNumber" : "123456789",
-      "email" : "supplier@email.com"
+      "address" : "Warsaw"
   ]
 
   static SupplierDto PIZZA_RESTAURANT = createSupplierDto(PIZZA_RESTAURANT_ID, "Pizza Restaurant")
@@ -33,7 +33,7 @@ trait SampleSuppliers {
     return AddSupplierDto.builder()
         .name(properties.name as String)
         .phoneNumber(properties.phoneNumber as String)
-        .email(properties.email as String)
+        .address(properties.address as String)
         .build()
   }
 

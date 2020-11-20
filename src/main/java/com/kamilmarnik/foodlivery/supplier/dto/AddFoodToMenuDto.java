@@ -13,5 +13,6 @@ public final class AddFoodToMenuDto {
   String name;
   long supplierId;
   Double price;
+  Long imageId;
 
 }

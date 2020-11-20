@@ -1,11 +1,15 @@
 package com.kamilmarnik.foodlivery.supplier.domain;
 
+import com.kamilmarnik.foodlivery.supplier.dto.FoodDto;
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto;
+import com.kamilmarnik.foodlivery.supplier.dto.SupplierMenuDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -26,8 +30,11 @@ class Supplier {
   @Column(name = "phone_number")
   String phoneNumber;
 
-  @Column(name = "email")
-  String email;
+  @Column(name = "address")
+  String address;
+
+  @Column(name = "image_id")
+  Long imageId;
 
   @Column(name = "created_at")
   LocalDateTime createdAt;
@@ -36,6 +43,21 @@ class Supplier {
     return SupplierDto.builder()
         .id(this.id)
         .name(this.name)
+        .phoneNumber(this.phoneNumber)
+        .address(this.address)
+        .imageId(this.imageId)
+        .createdAt(this.createdAt)
+        .build();
+  }
+
+  SupplierMenuDto menuDto(List<Food> supplierFood) {
+    final List<FoodDto> menu = supplierFood.stream()
+        .map(Food::dto)
+        .collect(Collectors.toList());
+
+    return SupplierMenuDto.builder()
+        .supplier(dto())
+        .menu(menu)
         .build();
   }
 

@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -14,5 +16,9 @@ public final class SupplierDto {
 
   long id;
   String name;
+  String phoneNumber;
+  String address;
+  Long imageId;
+  LocalDateTime createdAt;
 
 }

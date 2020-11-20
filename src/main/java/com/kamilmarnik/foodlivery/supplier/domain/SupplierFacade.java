@@ -39,6 +39,13 @@ public class SupplierFacade {
     return foodRepository.save(food).dto();
   }
 
+  public SupplierMenuDto getSupplierMenu(long supplierId) {
+    final Supplier supplier = getSupplier(supplierId);
+    final List<Food> supplierFood = foodRepository.findAllBySupplierId(supplierId);
+
+    return supplier.menuDto(supplierFood);
+  }
+
   public Page<SupplierDto> findAllSuppliers(PageInfo pageInfo) {
     return supplierRepository.findAll(pageInfo.toPageRequest())
         .map(Supplier::dto);

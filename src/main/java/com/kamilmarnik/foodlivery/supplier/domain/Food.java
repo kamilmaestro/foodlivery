@@ -26,6 +26,9 @@ class Food {
   @Column(name = "supplier_id")
   Long supplierId;
 
+  @Column(name = "image_id")
+  Long imageId;
+
   @Embedded
   @AttributeOverride(name = "price", column = @Column(name = "price"))
   Money price;
@@ -36,6 +39,7 @@ class Food {
         .name(this.name)
         .supplierId(this.supplierId)
         .price(this.price.getValueAsDouble())
+        .imageId(this.imageId)
         .build();
   }
 

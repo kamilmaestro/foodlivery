@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public final class ImageUploadedDto {
 
+  long id;
   String fileName;
   String fileType;
   String fileDownloadUrl;
