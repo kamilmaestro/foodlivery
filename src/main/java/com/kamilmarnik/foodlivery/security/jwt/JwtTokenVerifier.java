@@ -1,15 +1,17 @@
 package com.kamilmarnik.foodlivery.security.jwt;
 
 import com.google.common.base.Strings;
+import com.kamilmarnik.foodlivery.user.domain.CustomUserDetails;
+import com.kamilmarnik.foodlivery.user.domain.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
@@ -21,7 +23,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -51,14 +52,19 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
           .parseClaimsJws(token);
 
       Claims body = claimsJws.getBody();
-      String username = body.getSubject();
+      final String username = body.getSubject();
+      final long userId = ((Number) body.get("userId")).longValue();
+      final UserDetails userDetails = CustomUserDetails.builder()
+          .userId(userId)
+          .username(username)
+          .build();
       List<Map<String, String>> authorities = (List<Map<String, String>>) body.get("authorities");
       Set<SimpleGrantedAuthority> simpleGrantedAuthorities = authorities.stream()
           .map(auth -> new SimpleGrantedAuthority(auth.get("authority")))
           .collect(toSet());
 
       Authentication authentication = new UsernamePasswordAuthenticationToken(
-          username, null, simpleGrantedAuthorities
+          userDetails, null, simpleGrantedAuthorities
       );
       SecurityContextHolder.getContext().setAuthentication(authentication);
     } catch (JwtException e) {

@@ -1,9 +1,7 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import com.kamilmarnik.foodlivery.infrastructure.PageInfo;
+import org.springframework.data.domain.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -145,6 +143,13 @@ class InMemoryProposalRepository implements ProposalRepository {
     return values.values().stream()
         .filter(proposal -> proposal.getSupplierId() == supplierId)
         .collect(Collectors.toSet());
+  }
+
+  @Override
+  public Page<Proposal> findByChannelId(long channelId, Pageable pageable) {
+    return new PageImpl<>(values.values().stream()
+        .filter(proposal -> proposal.getChannelId().equals(channelId))
+        .collect(Collectors.toList()));
   }
 
 }

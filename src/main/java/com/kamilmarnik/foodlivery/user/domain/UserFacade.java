@@ -8,6 +8,10 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserFacade {
@@ -24,6 +28,12 @@ public class UserFacade {
         .build();
 
     return userRepository.save(toSave).dto();
+  }
+
+  public List<UserDto> getUsersByIds(Collection<Long> userIds) {
+    return userRepository.findAllById(userIds).stream()
+        .map(User::dto)
+        .collect(Collectors.toList());
   }
 
 }

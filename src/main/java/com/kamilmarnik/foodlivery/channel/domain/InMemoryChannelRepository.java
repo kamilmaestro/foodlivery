@@ -2,16 +2,11 @@ package com.kamilmarnik.foodlivery.channel.domain;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 class InMemoryChannelRepository implements ChannelRepository {
@@ -150,6 +145,13 @@ class InMemoryChannelRepository implements ChannelRepository {
     return values.values().stream()
         .filter(channel -> channel.getUuid().equals(channelUuid))
         .findFirst();
+  }
+
+  @Override
+  public Page<Channel> getByIdIn(Collection<Long> channelIds, Pageable pageable) {
+    return new PageImpl<>(values.values().stream()
+        .filter(channel -> channelIds.contains(channel.getId()))
+        .collect(Collectors.toList()));
   }
 
 }

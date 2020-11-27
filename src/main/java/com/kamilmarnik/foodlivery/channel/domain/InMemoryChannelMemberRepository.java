@@ -1,5 +1,6 @@
 package com.kamilmarnik.foodlivery.channel.domain;
 
+import com.kamilmarnik.foodlivery.channel.dto.ChannelMemberDto;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Example;
@@ -7,11 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 class InMemoryChannelMemberRepository implements ChannelMemberRepository {
@@ -141,6 +140,21 @@ class InMemoryChannelMemberRepository implements ChannelMemberRepository {
   @Override
   public <S extends ChannelMember> boolean exists(Example<S> example) {
     return false;
+  }
+
+  @Override
+  public Collection<Long> findChannelIdsAllByUserId(long userId) {
+    return values.values().stream()
+        .filter(channelMember -> channelMember.getMemberId().equals(userId))
+        .map(ChannelMember::getChannelId)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public Collection<ChannelMember> findByChannelId(long channelId) {
+    return values.values().stream()
+        .filter(channelMember -> channelMember.getChannelId().equals(channelId))
+        .collect(Collectors.toList());
   }
 
 }

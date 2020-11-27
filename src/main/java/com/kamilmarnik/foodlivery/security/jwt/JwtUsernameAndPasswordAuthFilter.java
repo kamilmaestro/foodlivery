@@ -2,6 +2,9 @@ package com.kamilmarnik.foodlivery.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kamilmarnik.foodlivery.security.LoginRequest;
+import com.kamilmarnik.foodlivery.security.LoginResponse;
+import com.kamilmarnik.foodlivery.user.domain.CustomUserDetails;
+import com.kamilmarnik.foodlivery.user.dto.UserDto;
 import com.kamilmarnik.foodlivery.utils.DateUtils;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -49,8 +52,10 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
 
   @Override
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    final long userId = ((CustomUserDetails) authResult.getPrincipal()).getUserId();
     String token = Jwts.builder()
         .setSubject(authResult.getName())
+        .claim("userId", userId)
         .claim("authorities", authResult.getAuthorities())
         .setIssuedAt(new Date())
         .setExpiration(nowPlusMinutes(jwtConfig.getTokenExpirationAfterMinutes()))
@@ -58,6 +63,10 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
         .compact();
 
     response.addHeader(jwtConfig.getAuthorizationHeader(), jwtConfig.getTokenPrefix() + token);
+    final LoginResponse user = new LoginResponse(userId, authResult.getName());
+    String json = new ObjectMapper().writeValueAsString(user);
+    response.getWriter().write(json);
+    response.flushBuffer();
   }
 
 }

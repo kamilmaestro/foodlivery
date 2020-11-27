@@ -17,7 +17,7 @@ import static java.time.LocalDateTime.now;
 @Getter
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "food")
+@Table(name = "proposals")
 class Proposal {
 
   @Id

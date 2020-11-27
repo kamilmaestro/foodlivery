@@ -11,8 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -52,13 +55,26 @@ public class SupplierFacade {
   }
 
   public void checkIfFoodExists(long foodId, long supplierId) {
-    foodRepository.findById(foodId)
-        .orElseThrow(() -> new FoodNotFound("Can not find food with id: " + foodId));
     getSupplier(supplierId);
+    foodRepository.findById(foodId)
+        .filter(food -> food.getSupplierId().equals(supplierId))
+        .orElseThrow(() -> new FoodNotFound("Can not find food with id: " + foodId));
   }
 
   public void checkIfSupplierExists(long supplierId) {
     getSupplier(supplierId);
+  }
+
+  public List<SupplierDto> getSuppliersByIds(Collection<Long> supplierIds) {
+    return supplierRepository.findAllById(supplierIds).stream()
+        .map(Supplier::dto)
+        .collect(toList());
+  }
+
+  public List<FoodDto> getFoodByIds(Collection<Long> foodIds) {
+    return foodRepository.findAllById(foodIds).stream()
+        .map(Food::dto)
+        .collect(toList());
   }
 
   private Supplier getSupplier(long supplierId) {

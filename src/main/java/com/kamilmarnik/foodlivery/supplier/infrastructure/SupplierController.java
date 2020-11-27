@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequestMapping("/supplier")
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -40,6 +42,16 @@ class SupplierController {
   @PostMapping("/food")
   public ResponseEntity<FoodDto> addFood(@RequestBody AddFoodToMenuDto addFoodToMenu) {
     return ResponseEntity.ok(supplierFacade.addFoodToSupplierMenu(addFoodToMenu));
+  }
+
+  @PostMapping("/ids")
+  public ResponseEntity<List<SupplierDto>> getSuppliersByIds(@RequestBody List<Long> supplierIds) {
+    return ResponseEntity.ok(supplierFacade.getSuppliersByIds(supplierIds));
+  }
+
+  @PostMapping("/food/ids")
+  public ResponseEntity<List<FoodDto>> getFoodByIds(@RequestBody List<Long> foodIds) {
+    return ResponseEntity.ok(supplierFacade.getFoodByIds(foodIds));
   }
 
 }

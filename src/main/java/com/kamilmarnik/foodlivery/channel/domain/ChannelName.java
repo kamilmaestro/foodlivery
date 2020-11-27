@@ -2,6 +2,7 @@ package com.kamilmarnik.foodlivery.channel.domain;
 
 import com.kamilmarnik.foodlivery.channel.exception.InvalidChannelName;
 import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.util.StringUtils;
 
@@ -10,8 +11,9 @@ import java.util.Optional;
 
 import static org.springframework.util.StringUtils.hasText;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Embeddable
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 final class ChannelName {
 
   private static final int MIN_NAME_LENGTH = 4;

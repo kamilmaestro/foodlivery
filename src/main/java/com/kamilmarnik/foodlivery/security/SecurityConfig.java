@@ -5,7 +5,6 @@ import com.kamilmarnik.foodlivery.security.jwt.JwtTokenVerifier;
 import com.kamilmarnik.foodlivery.security.jwt.JwtUsernameAndPasswordAuthFilter;
 import com.kamilmarnik.foodlivery.user.domain.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,12 +14,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.crypto.SecretKey;
-import java.util.Arrays;
+
+import static org.springframework.http.HttpMethod.GET;
 
 @Configuration
 @EnableWebSecurity
@@ -74,8 +71,14 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
   public void configure(WebSecurity web) {
     web.ignoring()
         .antMatchers("/register")
-        .antMatchers("/image/**")
-        .antMatchers("/supplier/**");
+        .antMatchers(GET, "/image/**")
+        .antMatchers("/swagger.json")
+        .antMatchers("/v2/api-docs/**")
+        .antMatchers("/swagger-resources/**")
+        .antMatchers("/swagger-ui.html")
+        .antMatchers("/configuration/ui")
+        .antMatchers("/configuration/security")
+        .antMatchers("/webjars/**");
   }
 
 }

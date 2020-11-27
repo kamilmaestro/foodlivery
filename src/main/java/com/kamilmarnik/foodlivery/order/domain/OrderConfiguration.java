@@ -1,6 +1,7 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
 import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
@@ -10,6 +11,7 @@ class OrderConfiguration {
     return orderFacade(supplierFacade, new InMemoryProposalRepository(), new InMemoryOrderRepository());
   }
 
+  @Bean
   OrderFacade orderFacade(SupplierFacade supplierFacade,
                           ProposalRepository proposalRepository,
                           OrderRepository orderRepository) {

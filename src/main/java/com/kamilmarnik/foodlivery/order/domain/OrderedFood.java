@@ -2,15 +2,17 @@ package com.kamilmarnik.foodlivery.order.domain;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Embeddable;
 
 import static java.util.Objects.requireNonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Embeddable
 @Getter
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 final class OrderedFood {
 
   long foodId;

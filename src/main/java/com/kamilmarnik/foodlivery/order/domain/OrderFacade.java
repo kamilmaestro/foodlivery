@@ -1,5 +1,6 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
+import com.kamilmarnik.foodlivery.infrastructure.PageInfo;
 import com.kamilmarnik.foodlivery.order.dto.*;
 import com.kamilmarnik.foodlivery.order.exception.OrderForSupplierAlreadyExists;
 import com.kamilmarnik.foodlivery.order.exception.OrderNotFound;
@@ -7,6 +8,7 @@ import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 
 import java.util.Set;
 
@@ -28,11 +30,12 @@ public class OrderFacade {
     return proposalRepository.save(proposal).dto();
   }
 
-  public AcceptedOrderDto becomePurchaser(long supplierId, long channelId) {
-    supplierFacade.checkIfSupplierExists(supplierId);
-    checkIfOrderForSupplierAlreadyExists(supplierId, channelId);
-    final Set<Proposal> supplierProposals = proposalRepository.findAllBySupplierId(supplierId);
-    final AcceptedOrder order = orderCreator.makeOrderForSupplier(supplierId, supplierProposals, channelId);
+  public AcceptedOrderDto becomePurchaser(NewPurchaserDto newPurchaser) {
+    supplierFacade.checkIfSupplierExists(newPurchaser.getSupplierId());
+    checkIfOrderForSupplierAlreadyExists(newPurchaser.getSupplierId(), newPurchaser.getChannelId());
+    final Set<Proposal> supplierProposals = proposalRepository.findAllBySupplierId(newPurchaser.getSupplierId());
+    final AcceptedOrder order = orderCreator
+        .makeOrderForSupplier(newPurchaser.getSupplierId(), supplierProposals, newPurchaser.getChannelId());
 
     return orderRepository.saveAccepted(order).acceptedDto();
   }
@@ -58,6 +61,11 @@ public class OrderFacade {
     return orderRepository.saveFinished(finishedOrder).finishedDto();
   }
 
+  public Page<ProposalDto> findChannelProposals(long channelId, PageInfo pageInfo) {
+    return proposalRepository.findByChannelId(channelId, pageInfo.toPageRequest())
+        .map(Proposal::dto);
+  }
+
   private void checkIfOrderForSupplierAlreadyExists(long supplierId, long channelId) {
     orderRepository.findBySupplierIdAndChannelIdAndStatus(supplierId, channelId, ORDERED).ifPresent(order -> {
       throw new OrderForSupplierAlreadyExists(
@@ -69,6 +77,10 @@ public class OrderFacade {
   private Order getOrder(Long orderId, OrderStatus status) {
     return orderRepository.findByIdAndStatus(orderId, status)
         .orElseThrow(() -> new OrderNotFound(orderId, status.name()));
+  }
+
+  public AcceptedOrderDto getOrderDto(long id) {
+    return getOrder(id, ORDERED).acceptedDto();
   }
 
 }

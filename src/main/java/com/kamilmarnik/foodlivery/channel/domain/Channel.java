@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.*;
 
 import static com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUserGetter.getLoggedUserId;
+import static com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUserGetter.getLoggedUsername;
 
 @Entity
 @Builder
@@ -42,7 +43,7 @@ class Channel {
   }
 
   ChannelMember join() {
-    return new ChannelMember(this.id, getLoggedUserId());
+    return new ChannelMember(this.id, getLoggedUserId(), getLoggedUsername());
   }
 
 }

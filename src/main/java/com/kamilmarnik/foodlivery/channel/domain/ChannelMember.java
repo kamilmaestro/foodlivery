@@ -13,11 +13,11 @@ import static java.time.LocalDateTime.now;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@Getter(value = AccessLevel.PACKAGE)
 @Table(name = "channel_members")
 class ChannelMember {
 
   @Setter(value = AccessLevel.PACKAGE)
-  @Getter(value = AccessLevel.PACKAGE)
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
@@ -28,12 +28,16 @@ class ChannelMember {
   @Column(name = "member_id")
   Long memberId;
 
+  @Column(name = "member_name")
+  String memberName;
+
   @Column(name = "joined_at")
   LocalDateTime joinedAt;
 
-  ChannelMember(long channelId, long memberId) {
+  ChannelMember(long channelId, long memberId, String memberName) {
     this.channelId = channelId;
     this.memberId = memberId;
+    this.memberName = memberName;
     this.joinedAt = now();
   }
 
@@ -42,6 +46,7 @@ class ChannelMember {
         .id(this.id)
         .channelId(this.channelId)
         .memberId(this.memberId)
+        .memberName(this.memberName)
         .joinedAt(this.joinedAt)
         .build();
   }
