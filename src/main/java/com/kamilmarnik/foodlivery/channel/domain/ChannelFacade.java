@@ -48,9 +48,8 @@ public class ChannelFacade {
     final String channelUuid = channelInvitation.getDecodedChannelUuidFrom(invitation);
     final Channel channel = channelRepository.findByUuid(channelUuid)
         .orElseThrow(() -> new ChannelNotFound("Channel not found with uuid: " + channelUuid));
-    final ChannelMember channelMember = channel.join();
 
-    return channelMemberRepository.save(channelMember).dto();
+    return joinChannel(channel).dto();
   }
 
   public Page<ChannelDto> findChannelsByUserId(PageInfo pageInfo) {
@@ -63,6 +62,14 @@ public class ChannelFacade {
     return channelMemberRepository.findByChannelId(channelId).stream()
         .map(ChannelMember::dto)
         .collect(Collectors.toList());
+  }
+
+  private ChannelMember joinChannel(Channel channel) {
+    return channelMemberRepository.findByChannelIdAndMemberId(channel.getId(), getLoggedUserId())
+        .orElseGet(() -> {
+          final ChannelMember channelMember = channel.join();
+          return channelMemberRepository.save(channelMember);
+        });
   }
 
 }

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
+import java.util.Optional;
 
 interface ChannelMemberRepository extends JpaRepository<ChannelMember, Long> {
 
@@ -12,5 +13,7 @@ interface ChannelMemberRepository extends JpaRepository<ChannelMember, Long> {
   Collection<Long> findChannelIdsAllByUserId(@Param("userId") long userId);
 
   Collection<ChannelMember> findByChannelId(long channelId);
+
+  Optional<ChannelMember> findByChannelIdAndMemberId(long channelId, long memberId);
 
 }

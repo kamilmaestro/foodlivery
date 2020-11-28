@@ -157,4 +157,11 @@ class InMemoryChannelMemberRepository implements ChannelMemberRepository {
         .collect(Collectors.toList());
   }
 
+  @Override
+  public Optional<ChannelMember> findByChannelIdAndMemberId(long channelId, long memberId) {
+    return values.values().stream()
+        .filter(member -> member.getChannelId() == channelId && member.getMemberId() == memberId)
+        .findFirst();
+  }
+
 }

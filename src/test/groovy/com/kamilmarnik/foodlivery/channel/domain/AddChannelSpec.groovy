@@ -6,6 +6,7 @@ import com.kamilmarnik.foodlivery.channel.dto.ChannelMemberDto
 import com.kamilmarnik.foodlivery.channel.exception.ChannelNotFound
 import com.kamilmarnik.foodlivery.channel.exception.InvalidChannelName
 import com.kamilmarnik.foodlivery.channel.exception.InvalidInvitation
+import com.kamilmarnik.foodlivery.infrastructure.PageInfo
 import com.kamilmarnik.foodlivery.samples.SampleChannels
 import com.kamilmarnik.foodlivery.samples.SampleUsers
 import com.kamilmarnik.foodlivery.security.jwt.JwtConfig
@@ -34,7 +35,7 @@ class AddChannelSpec extends Specification implements SampleUsers, SampleChannel
 
   def "should be able to create a new channel" () {
     when: "$JOHN creates new channel: $KRAKOW"
-      ChannelDto channel = channelFacade.createChannel(newChannel(name: KRAKOW.name))
+      ChannelDto channel = channelFacade.createChannel(KRAKOW.name)
     then: "$KRAKOW channel is created by $JOHN"
       channel.createdBy == JOHN.userId
       channel.name == KRAKOW.name
@@ -43,7 +44,7 @@ class AddChannelSpec extends Specification implements SampleUsers, SampleChannel
   @Unroll
   def "should not be able to create a channel with name longer than 100 characters and shorter than 4" () {
     when: "$JOHN wants to create a new channel with name: $name"
-      channelFacade.createChannel(newChannel(name: name))
+      channelFacade.createChannel(name)
     then: "channel is not created"
       thrown(InvalidChannelName)
     where:
@@ -52,7 +53,7 @@ class AddChannelSpec extends Specification implements SampleUsers, SampleChannel
 
   def "should be able to join a channel" () {
     given: "there is a $KRAKOW channel created by $JOHN"
-      ChannelDto krakowChannel = channelFacade.createChannel(newChannel(name: KRAKOW.name))
+      ChannelDto krakowChannel = channelFacade.createChannel(KRAKOW.name)
     and: "$JOHN generates a invitation to the $KRAKOW channel"
       String invitation = channelFacade.generateInvitation(krakowChannel.id)
     and: "$MARC is logged in"
@@ -70,6 +71,21 @@ class AddChannelSpec extends Specification implements SampleUsers, SampleChannel
       channelFacade.joinChannel("fakeInvitation")
     then: "$MARC has not joined any channel"
       thrown(InvalidInvitation)
+  }
+
+  def "should not be able to join a channel twice" () {
+    given: "there is a $KRAKOW channel created by $JOHN"
+      ChannelDto krakowChannel = channelFacade.createChannel(KRAKOW.name)
+      String invitation = channelFacade.generateInvitation(krakowChannel.id)
+    and: "$MARC joins a $KRAKOW channel"
+      logInUser(MARC)
+      channelFacade.joinChannel(invitation)
+    when: "$MARC wants to join a $KRAKOW channel once again"
+      channelFacade.joinChannel(invitation)
+    then: "$MARC still belongs to one channel: $KRAKOW"
+      channelFacade.findChannelsByUserId(PageInfo.DEFAULT).content.id == [krakowChannel.id]
+    and: "$KRAKOW contains two members: $JOHN and $MARC"
+      channelFacade.findChannelMembers(krakowChannel.id).memberId.sort() == [JOHN.userId, MARC.userId].sort()
   }
 
 }

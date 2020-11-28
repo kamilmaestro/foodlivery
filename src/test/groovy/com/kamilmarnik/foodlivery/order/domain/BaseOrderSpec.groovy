@@ -24,12 +24,12 @@ abstract class BaseOrderSpec extends BaseChannelSpec implements SampleUsers, Sam
 
   def setup() {
     logInUser(JOHN)
-    CHANNEL_ID = channelFacade.createChannel(newChannel()).id
+    CHANNEL_ID = channelFacade.createChannel(KRAKOW.name).id
   }
 
   FinalizedOrderDto newFinalizedOrder(String supplierName) {
     ProposalDto proposal = addProposal(supplierName)
-    AcceptedOrderDto order = orderFacade.becomePurchaser(proposal.supplierId, proposal.channelId)
+    AcceptedOrderDto order = orderFacade.becomePurchaser(newPurchaser(proposal.supplierId, proposal.channelId))
 
     return orderFacade.finalizeOrder(order.id)
   }

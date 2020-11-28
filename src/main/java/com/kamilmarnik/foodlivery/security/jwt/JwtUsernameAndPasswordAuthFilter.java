@@ -53,7 +53,7 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
   @Override
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
     final long userId = ((CustomUserDetails) authResult.getPrincipal()).getUserId();
-    String token = Jwts.builder()
+    final String token = Jwts.builder()
         .setSubject(authResult.getName())
         .claim("userId", userId)
         .claim("authorities", authResult.getAuthorities())
@@ -64,7 +64,7 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
 
     response.addHeader(jwtConfig.getAuthorizationHeader(), jwtConfig.getTokenPrefix() + token);
     final LoginResponse user = new LoginResponse(userId, authResult.getName());
-    String json = new ObjectMapper().writeValueAsString(user);
+    final String json = new ObjectMapper().writeValueAsString(user);
     response.getWriter().write(json);
     response.flushBuffer();
   }

@@ -1,6 +1,7 @@
 package com.kamilmarnik.foodlivery.samples
 
 import com.kamilmarnik.foodlivery.order.dto.AddProposalDto
+import com.kamilmarnik.foodlivery.order.dto.NewPurchaserDto
 
 trait SampleOrders {
 
@@ -20,6 +21,10 @@ trait SampleOrders {
         .amountOfFood(properties.amountOfFood as Integer)
         .channelId(properties.channelId as Long)
         .build()
+  }
+
+  static NewPurchaserDto newPurchaser(long supplierId, long channelId) {
+    return new NewPurchaserDto(supplierId, channelId)
   }
 
 }
