@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Getter
@@ -12,12 +13,13 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public final class ProposalDto {
 
-  long proposalId;
+  long id;
   long foodId;
   int foodAmount;
   long supplierId;
   long channelId;
   long createdBy;
-  LocalDateTime createdAt;
+  Instant createdAt;
+  Instant expirationDate;
 
 }

@@ -1,6 +1,5 @@
 package com.kamilmarnik.foodlivery.channel.domain;
 
-import com.kamilmarnik.foodlivery.channel.dto.AddChannelDto;
 import com.kamilmarnik.foodlivery.channel.dto.ChannelDto;
 import com.kamilmarnik.foodlivery.channel.dto.ChannelMemberDto;
 import com.kamilmarnik.foodlivery.channel.exception.ChannelNotFound;

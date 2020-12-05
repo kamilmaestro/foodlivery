@@ -1,6 +1,7 @@
 package com.kamilmarnik.foodlivery.order.domain
 
 import com.kamilmarnik.foodlivery.channel.dto.ChannelDto
+import com.kamilmarnik.foodlivery.infrastructure.PageInfo
 import com.kamilmarnik.foodlivery.order.dto.AcceptedOrderDto
 import com.kamilmarnik.foodlivery.order.dto.UserOrderDto
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto
@@ -96,6 +97,20 @@ class PurchaserSpec extends BaseOrderSpec {
       order.supplierId == supplier.id
       order.purchaserId == JOHN.userId
       order.channelId == warsaw.id
+  }
+
+  def "should close proposal after becoming a purchaser" () {
+    given: "$JOHN creates a proposal with food from the $PIZZA_RESTAURANT"
+      ProposalDto proposal = addProposal(PIZZA_RESTAURANT.name)
+    when: "$JOHN applies himself as the purchaser for this supplier"
+      AcceptedOrderDto order = orderFacade.becomePurchaser(newPurchaser(proposal.supplierId, proposal.channelId))
+    then: "$JOHN is a purchaser for orders connected with $PIZZA_RESTAURANT"
+      order.purchaserId == JOHN.userId
+      order.supplierId == proposal.supplierId
+      order.createdAt != null
+      order.uuid != null
+    and: "this proposal is closed and converted to an order"
+      orderFacade.findChannelProposals(proposal.channelId, PageInfo.DEFAULT).content == []
   }
 
 }

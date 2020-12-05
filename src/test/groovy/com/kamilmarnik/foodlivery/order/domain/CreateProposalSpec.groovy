@@ -1,6 +1,5 @@
 package com.kamilmarnik.foodlivery.order.domain
 
-import com.kamilmarnik.foodlivery.channel.exception.ChannelNotFound
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
@@ -22,6 +21,7 @@ class CreateProposalSpec extends BaseOrderSpec {
       proposal.supplierId == supplier.id
       proposal.createdBy == JOHN.userId
       proposal.createdAt != null
+      proposal.expirationDate != null
       proposal.foodId == addedFood.id
   }
 

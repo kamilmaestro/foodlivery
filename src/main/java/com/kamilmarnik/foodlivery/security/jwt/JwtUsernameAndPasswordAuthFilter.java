@@ -4,8 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kamilmarnik.foodlivery.security.LoginRequest;
 import com.kamilmarnik.foodlivery.security.LoginResponse;
 import com.kamilmarnik.foodlivery.user.domain.CustomUserDetails;
-import com.kamilmarnik.foodlivery.user.dto.UserDto;
-import com.kamilmarnik.foodlivery.utils.DateUtils;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,11 +17,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 
-import static com.kamilmarnik.foodlivery.utils.DateUtils.nowPlusMinutes;
+import static com.kamilmarnik.foodlivery.utils.DateUtils.currentDatePlusMinutes;
 
 public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -58,7 +54,7 @@ public class JwtUsernameAndPasswordAuthFilter extends UsernamePasswordAuthentica
         .claim("userId", userId)
         .claim("authorities", authResult.getAuthorities())
         .setIssuedAt(new Date())
-        .setExpiration(nowPlusMinutes(jwtConfig.getTokenExpirationAfterMinutes()))
+        .setExpiration(currentDatePlusMinutes(jwtConfig.getTokenExpirationAfterMinutes()))
         .signWith(secretKey)
         .compact();
 

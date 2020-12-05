@@ -137,4 +137,10 @@ class InMemorySupplierRepository implements SupplierRepository {
   public <S extends Supplier> boolean exists(Example<S> example) {
     return false;
   }
+
+  @Override
+  public Page<Supplier> findAllByNameOrAddress(String toSearch, Pageable pageable) {
+    return null;
+  }
+
 }

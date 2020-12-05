@@ -151,4 +151,9 @@ class InMemoryFoodRepository implements FoodRepository {
         .collect(Collectors.toList());
   }
 
+  @Override
+  public Page<Food> findAllBySupplierId(long supplierId, Pageable pageable) {
+    return null;
+  }
+
 }

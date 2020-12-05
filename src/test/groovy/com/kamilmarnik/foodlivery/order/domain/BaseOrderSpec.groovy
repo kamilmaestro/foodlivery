@@ -14,16 +14,21 @@ import com.kamilmarnik.foodlivery.supplier.domain.SupplierConfiguration
 import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
+import com.kamilmarnik.foodlivery.utils.FixedTimeProvider
+import com.kamilmarnik.foodlivery.utils.TimeProvider
 
 abstract class BaseOrderSpec extends BaseChannelSpec implements SampleUsers, SampleSuppliers, SampleOrders, SampleFood, SampleChannels, SecurityContextProvider {
 
   SupplierFacade supplierFacade = new SupplierConfiguration().supplierFacade()
-  OrderFacade orderFacade = new OrderConfiguration().orderFacade(supplierFacade)
+  OrderExpirationConfig expirationConfig = new OrderExpirationConfig()
+  TimeProvider timeProvider = new FixedTimeProvider()
+  OrderFacade orderFacade = new OrderConfiguration().orderFacade(supplierFacade, expirationConfig, timeProvider)
 
   static Long CHANNEL_ID = null
 
   def setup() {
     logInUser(JOHN)
+    expirationConfig.setExpirationAfterMinutes(180)
     CHANNEL_ID = channelFacade.createChannel(KRAKOW.name).id
   }
 

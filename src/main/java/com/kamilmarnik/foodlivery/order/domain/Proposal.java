@@ -6,29 +6,32 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 import static com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUserGetter.getLoggedUserId;
-import static java.time.LocalDateTime.now;
+import static com.kamilmarnik.foodlivery.order.domain.ProposalStatus.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "proposals")
 class Proposal {
 
   @Id
+  @Setter(value = AccessLevel.PACKAGE)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
 
   @Column(name = "created_by")
   Long createdBy;
 
-  @Column(name = "created_at")
-  LocalDateTime createdAt;
+  @Embedded
+  @AttributeOverrides({
+      @AttributeOverride(name = "createdAt", column = @Column(name = "created_at")),
+      @AttributeOverride(name = "expirationDate", column = @Column(name = "expiration_date"))
+  })
+  ProposalExpiration expiration;
 
   @Column(name = "supplier_id")
   Long supplierId;
@@ -43,28 +46,40 @@ class Proposal {
   @Column(name = "channel_id")
   Long channelId;
 
-  Proposal(AddProposalDto addProposal) {
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status")
+  ProposalStatus status;
+
+  Proposal(AddProposalDto addProposal, ProposalExpiration expiration) {
     this.createdBy = getLoggedUserId();
-    this.createdAt = now();
+    this.expiration = expiration;
     this.supplierId = addProposal.getSupplierId();
     this.orderedFood = new OrderedFood(addProposal.getFoodId(), addProposal.getAmountOfFood());
     this.channelId = addProposal.getChannelId();
+    this.status = WAITING;
   }
 
   UserOrder makeOrderForUser(String orderUuid) {
+    this.status = ORDERED;
     return new UserOrder(orderUuid, this.orderedFood, this.createdBy);
   }
 
   ProposalDto dto() {
     return ProposalDto.builder()
-        .proposalId(this.id)
+        .id(this.id)
         .foodId(this.orderedFood.getFoodId())
         .foodAmount(this.orderedFood.getAmount().getValue())
         .supplierId(this.supplierId)
         .channelId(this.channelId)
         .createdBy(this.createdBy)
-        .createdAt(this.createdAt)
+        .createdAt(this.expiration.getCreatedAt())
+        .expirationDate(this.expiration.getExpirationDate())
         .build();
+  }
+
+  Proposal expire() {
+    this.status = EXPIRED;
+    return this;
   }
 
 }

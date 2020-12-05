@@ -8,12 +8,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.util.StringUtils;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -77,9 +77,24 @@ public class SupplierFacade {
         .collect(toList());
   }
 
+  public Page<SupplierDto> searchSuppliers(String searchText, PageInfo pageInfo) {
+    if (StringUtils.isEmpty(searchText)) {
+      return findAllSuppliers(pageInfo);
+    }
+    final String toSearch = URLDecoder.decode(searchText, StandardCharsets.UTF_8);
+
+    return supplierRepository.findAllByNameOrAddress(toSearch, pageInfo.toPageRequest())
+        .map(Supplier::dto);
+  }
+
+  public Page<FoodDto> getSupplierFood(long supplierId, PageInfo pageInfo) {
+    return foodRepository.findAllBySupplierId(supplierId, pageInfo.toPageRequest())
+        .map(Food::dto);
+  }
+
   private Supplier getSupplier(long supplierId) {
     return supplierRepository.findById(supplierId)
-            .orElseThrow(SupplierNotFound::new);
+        .orElseThrow(SupplierNotFound::new);
   }
 
 }

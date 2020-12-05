@@ -5,27 +5,31 @@ import com.kamilmarnik.foodlivery.order.dto.*;
 import com.kamilmarnik.foodlivery.order.exception.OrderForSupplierAlreadyExists;
 import com.kamilmarnik.foodlivery.order.exception.OrderNotFound;
 import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade;
+import com.kamilmarnik.foodlivery.utils.TimeProvider;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.*;
+import static com.kamilmarnik.foodlivery.order.domain.ProposalStatus.WAITING;
 
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderFacade {
 
   SupplierFacade supplierFacade;
+  TimeProvider timeProvider;
   ProposalRepository proposalRepository;
   OrderRepository orderRepository;
   OrderCreator orderCreator;
 
   public ProposalDto createProposal(AddProposalDto addProposal) {
     supplierFacade.checkIfFoodExists(addProposal.getFoodId(), addProposal.getSupplierId());
-    final Proposal proposal = new Proposal(addProposal);
+    final Proposal proposal = orderCreator.createProposal(addProposal);
 
     return proposalRepository.save(proposal).dto();
   }
@@ -62,8 +66,21 @@ public class OrderFacade {
   }
 
   public Page<ProposalDto> findChannelProposals(long channelId, PageInfo pageInfo) {
-    return proposalRepository.findByChannelId(channelId, pageInfo.toPageRequest())
+    return proposalRepository.findByChannelIdAndStatus(channelId, WAITING, pageInfo.toPageRequest())
         .map(Proposal::dto);
+  }
+
+  public AcceptedOrderDto getOrderDto(long id) {
+    return getOrder(id, ORDERED).acceptedDto();
+  }
+
+  void updateExpiredProposals() {
+    final Set<Proposal> expiredProposals = proposalRepository.findToExpire(timeProvider.now()).stream()
+        .map(Proposal::expire)
+        .collect(Collectors.toSet());
+    if (!expiredProposals.isEmpty()) {
+      proposalRepository.saveAll(expiredProposals);
+    }
   }
 
   private void checkIfOrderForSupplierAlreadyExists(long supplierId, long channelId) {
@@ -77,10 +94,6 @@ public class OrderFacade {
   private Order getOrder(Long orderId, OrderStatus status) {
     return orderRepository.findByIdAndStatus(orderId, status)
         .orElseThrow(() -> new OrderNotFound(orderId, status.name()));
-  }
-
-  public AcceptedOrderDto getOrderDto(long id) {
-    return getOrder(id, ORDERED).acceptedDto();
   }
 
 }

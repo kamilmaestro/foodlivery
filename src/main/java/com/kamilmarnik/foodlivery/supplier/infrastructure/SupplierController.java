@@ -8,6 +8,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,7 +36,7 @@ class SupplierController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<SupplierMenuDto> getSupplier(@PathVariable("id") long id) {
+  public ResponseEntity<SupplierMenuDto> getSupplierMenu(@PathVariable("id") long id) {
     return ResponseEntity.ok(supplierFacade.getSupplierMenu(id));
   }
 
@@ -49,9 +50,21 @@ class SupplierController {
     return ResponseEntity.ok(supplierFacade.getSuppliersByIds(supplierIds));
   }
 
+  @GetMapping("/{id}/food")
+  public ResponseEntity<Page<FoodDto>> getSupplierFood(@PathVariable("id") long supplierId,
+                                                       @ModelAttribute PageInfo pageInfo) {
+    return ResponseEntity.ok(supplierFacade.getSupplierFood(supplierId, pageInfo));
+  }
+
   @PostMapping("/food/ids")
   public ResponseEntity<List<FoodDto>> getFoodByIds(@RequestBody List<Long> foodIds) {
     return ResponseEntity.ok(supplierFacade.getFoodByIds(foodIds));
+  }
+
+  @GetMapping("/search")
+  public ResponseEntity<Page<SupplierDto>> searchSuppliers(@RequestParam("text") String searchText,
+                                                           @ModelAttribute PageInfo pageInfo) {
+    return ResponseEntity.ok(supplierFacade.searchSuppliers(searchText, pageInfo));
   }
 
 }

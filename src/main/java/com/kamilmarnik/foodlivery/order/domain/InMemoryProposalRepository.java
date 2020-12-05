@@ -3,6 +3,7 @@ package com.kamilmarnik.foodlivery.order.domain;
 import com.kamilmarnik.foodlivery.infrastructure.PageInfo;
 import org.springframework.data.domain.*;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -59,12 +60,11 @@ class InMemoryProposalRepository implements ProposalRepository {
   @Override
   public Proposal save(Proposal proposal) {
     if (proposal.getId() == null || proposal.getId() == 0L) {
-      long supplierId = new Random().nextLong();
-      proposal = proposal.toBuilder()
-          .id(supplierId)
-          .build();
+      long id = new Random().nextLong();
+      proposal.setId(id);
     }
     values.put(proposal.getId(), proposal);
+
     return proposal;
   }
 
@@ -146,10 +146,18 @@ class InMemoryProposalRepository implements ProposalRepository {
   }
 
   @Override
-  public Page<Proposal> findByChannelId(long channelId, Pageable pageable) {
+  public Page<Proposal> findByChannelIdAndStatus(long channelId, ProposalStatus status, Pageable pageable) {
     return new PageImpl<>(values.values().stream()
-        .filter(proposal -> proposal.getChannelId().equals(channelId))
+        .filter(proposal -> proposal.getChannelId().equals(channelId) && proposal.getStatus().equals(status))
         .collect(Collectors.toList()));
+  }
+
+  @Override
+  public Set<Proposal> findToExpire(Instant now) {
+    return values.values().stream()
+        .filter(proposal -> proposal.getExpiration().getExpirationDate().isBefore(now) ||
+            proposal.getExpiration().getExpirationDate().equals(now)
+        ).collect(Collectors.toSet());
   }
 
 }

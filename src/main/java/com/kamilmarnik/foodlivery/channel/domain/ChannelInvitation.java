@@ -10,13 +10,9 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.security.Key;
 import java.util.Date;
 
-import static com.kamilmarnik.foodlivery.utils.DateUtils.nowPlusMinutes;
-import static io.jsonwebtoken.SignatureAlgorithm.HS256;
-import static javax.xml.bind.DatatypeConverter.parseBase64Binary;
+import static com.kamilmarnik.foodlivery.utils.DateUtils.currentDatePlusMinutes;
 
 @Getter
 @AllArgsConstructor
@@ -30,7 +26,7 @@ final class ChannelInvitation {
     return Jwts.builder()
         .setSubject(channel.getUuid())
         .setIssuedAt(new Date())
-        .setExpiration(nowPlusMinutes(jwtConfig.getTokenExpirationAfterMinutes()))
+        .setExpiration(currentDatePlusMinutes(jwtConfig.getTokenExpirationAfterMinutes()))
         .signWith(secretKey)
         .compact();
   }
