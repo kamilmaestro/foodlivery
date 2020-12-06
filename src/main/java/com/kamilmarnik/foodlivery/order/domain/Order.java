@@ -1,14 +1,12 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
-import com.kamilmarnik.foodlivery.order.dto.FinalizedOrderDto;
-import com.kamilmarnik.foodlivery.order.dto.AcceptedOrderDto;
-import com.kamilmarnik.foodlivery.order.dto.FinishedOrderDto;
-import com.kamilmarnik.foodlivery.order.dto.UserOrderDto;
+import com.kamilmarnik.foodlivery.order.dto.*;
 import com.kamilmarnik.foodlivery.order.exception.OrderFinalizationForbidden;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +25,7 @@ import static java.util.stream.Collectors.toSet;
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "orders")
-class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder {
+class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializable {
 
   @Setter(value = AccessLevel.PACKAGE)
   @Id
@@ -54,7 +52,7 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder {
   OrderStatus status;
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-  @JoinColumn(name = "order_uuid", updatable = false, insertable = false)
+  @JoinColumn(name = "order_uuid", referencedColumnName = "uuid", updatable = false, insertable = false)
   Set<UserOrder> userOrders;
 
   private Order(long supplierId, long channelId, long purchaserId, OrderStatus status, Set<Proposal> proposals) {
@@ -144,6 +142,22 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder {
         .channelId(this.channelId)
         .purchaserId(this.purchaserId)
         .createdAt(this.createdAt)
+        .build();
+  }
+
+  public OrderWithStatusDto orderWithStatusDto() {
+    final List<UserOrderDto> userOrders = this.userOrders.stream()
+        .map(UserOrder::dto)
+        .collect(toList());
+
+    return OrderWithStatusDto.builder()
+        .id(this.id)
+        .uuid(this.uuid)
+        .supplierId(this.supplierId)
+        .channelId(this.channelId)
+        .purchaserId(this.purchaserId)
+        .createdAt(this.createdAt)
+        .userOrders(userOrders)
         .build();
   }
 

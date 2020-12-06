@@ -11,7 +11,7 @@ import java.util.Set;
 
 interface ProposalRepository extends JpaRepository<Proposal, Long> {
 
-  Set<Proposal> findAllBySupplierId(long supplierId);
+  Set<Proposal> findAllBySupplierIdAndChannelId(long supplierId, long channelId);
 
   Page<Proposal> findByChannelIdAndStatus(long channelId, ProposalStatus status, Pageable pageable);
 

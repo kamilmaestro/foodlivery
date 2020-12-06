@@ -31,6 +31,12 @@ class OrderController {
     return ResponseEntity.ok(orderFacade.createProposal(addProposal));
   }
 
+  @GetMapping("/channel/{channelId}")
+  public ResponseEntity<Page<OrderWithStatusDto>> findNotFinishedOrders(@PathVariable long channelId,
+                                                                        @ModelAttribute PageInfo pageInfo) {
+    return ResponseEntity.ok(orderFacade.findNotFinishedOrders(channelId, pageInfo));
+  }
+
   @PostMapping("/purchaser")
   public ResponseEntity<AcceptedOrderDto> becomePurchaser(@RequestBody NewPurchaserDto newPurchaser) {
     return ResponseEntity.ok(orderFacade.becomePurchaser(newPurchaser));
@@ -51,7 +57,7 @@ class OrderController {
     return ResponseEntity.ok(orderFacade.getOrderDto(orderId));
   }
 
-  @GetMapping("/channel/{channelId}")
+  @GetMapping("/channel/{channelId}/proposals")
   public ResponseEntity<Page<ProposalDto>> findChannelProposals(@PathVariable long channelId,
                                                                 @ModelAttribute PageInfo pageInfo) {
     return ResponseEntity.ok(orderFacade.findChannelProposals(channelId, pageInfo));

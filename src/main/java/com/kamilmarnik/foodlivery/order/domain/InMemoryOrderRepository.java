@@ -170,4 +170,9 @@ class InMemoryOrderRepository implements OrderRepository {
         .findFirst();
   }
 
+  @Override
+  public Page<Order> findAllByChannelIdAndStatusNot(long channelId, OrderStatus status, Pageable pageable) {
+    return null;
+  }
+
 }

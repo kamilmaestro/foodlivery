@@ -37,7 +37,8 @@ public class OrderFacade {
   public AcceptedOrderDto becomePurchaser(NewPurchaserDto newPurchaser) {
     supplierFacade.checkIfSupplierExists(newPurchaser.getSupplierId());
     checkIfOrderForSupplierAlreadyExists(newPurchaser.getSupplierId(), newPurchaser.getChannelId());
-    final Set<Proposal> supplierProposals = proposalRepository.findAllBySupplierId(newPurchaser.getSupplierId());
+    final Set<Proposal> supplierProposals = proposalRepository
+        .findAllBySupplierIdAndChannelId(newPurchaser.getSupplierId(), newPurchaser.getChannelId());
     final AcceptedOrder order = orderCreator
         .makeOrderForSupplier(newPurchaser.getSupplierId(), supplierProposals, newPurchaser.getChannelId());
 
@@ -68,6 +69,11 @@ public class OrderFacade {
   public Page<ProposalDto> findChannelProposals(long channelId, PageInfo pageInfo) {
     return proposalRepository.findByChannelIdAndStatus(channelId, WAITING, pageInfo.toPageRequest())
         .map(Proposal::dto);
+  }
+
+  public Page<OrderWithStatusDto> findNotFinishedOrders(long channelId, PageInfo pageInfo) {
+    return orderRepository.findAllByChannelIdAndStatusNot(channelId, FINISHED, pageInfo.toPageRequest())
+        .map(Order::orderWithStatusDto);
   }
 
   public AcceptedOrderDto getOrderDto(long id) {
