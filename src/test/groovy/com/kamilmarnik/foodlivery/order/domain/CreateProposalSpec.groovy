@@ -10,6 +10,13 @@ import spock.lang.Unroll
 
 class CreateProposalSpec extends BaseOrderSpec {
 
+  def setup() {
+    given: "$JOHN is logged in"
+      logInUser(JOHN)
+    and: "there is a $KRAKOW channel"
+      CHANNEL_ID = channelFacade.createChannel(KRAKOW.name).id
+  }
+
   def "should create a new proposal" () {
     given: "there is a supplier $KEBAB_RESTAURANT"
       SupplierDto supplier = supplierFacade.addSupplier(newSupplier(name: KEBAB_RESTAURANT.name))
@@ -22,7 +29,7 @@ class CreateProposalSpec extends BaseOrderSpec {
       proposal.createdBy == JOHN.userId
       proposal.createdAt != null
       proposal.expirationDate != null
-      proposal.foodId == addedFood.id
+      proposal.food.foodId == [addedFood.id]
   }
 
   @Unroll

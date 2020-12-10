@@ -54,11 +54,14 @@ public class SupplierFacade {
         .map(Supplier::dto);
   }
 
-  public void checkIfFoodExists(long foodId, long supplierId) {
+  public void checkIfFoodExists(Collection<Long> foodIds, long supplierId) {
     getSupplier(supplierId);
-    foodRepository.findById(foodId)
+    final long foundFoodSize = foodRepository.findAllById(foodIds).stream()
         .filter(food -> food.getSupplierId().equals(supplierId))
-        .orElseThrow(() -> new FoodNotFound("Can not find food with id: " + foodId));
+        .count();
+    if (foundFoodSize != foodIds.size()) {
+      throw new FoodNotFound("Can not find food");
+    }
   }
 
   public void checkIfSupplierExists(long supplierId) {

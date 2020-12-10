@@ -8,6 +8,13 @@ import com.kamilmarnik.foodlivery.user.dto.UserDto
 
 class DeleteUserOrderSpec extends BaseOrderSpec {
 
+  def setup() {
+    given: "$JOHN is logged in"
+      logInUser(JOHN)
+    and: "there is a $KRAKOW channel"
+      CHANNEL_ID = channelFacade.createChannel(KRAKOW.name).id
+  }
+
   def "purchaser is able to delete an user order from the finalized order" () {
     given: "there is an order for the $PIZZA_RESTAURANT with user orders added by: $JOHN and $MARC"
       ProposalDto johnProposal = addProposal(PIZZA_RESTAURANT.name)

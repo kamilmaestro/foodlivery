@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 class InMemoryFoodRepository implements FoodRepository {
 
@@ -32,8 +33,11 @@ class InMemoryFoodRepository implements FoodRepository {
   }
 
   @Override
-  public List<Food> findAllById(Iterable<Long> iterable) {
-    return null;
+  public List<Food> findAllById(Iterable<Long> ids) {
+    return values.values().stream()
+        .filter(food ->
+            StreamSupport.stream(ids.spliterator(), false).anyMatch(id -> food.getId().equals(id))
+        ).collect(Collectors.toList());
   }
 
   @Override

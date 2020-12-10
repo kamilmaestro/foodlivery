@@ -7,16 +7,15 @@ import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import static com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUserGetter.getLoggedUserId;
 import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.*;
-import static java.time.LocalDateTime.now;
-import static java.util.UUID.randomUUID;
+import static java.time.Instant.now;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -45,7 +44,7 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
   Long purchaserId;
 
   @Column(name = "created_at")
-  LocalDateTime createdAt;
+  Instant createdAt;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "status")
@@ -54,18 +53,6 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "order_uuid", referencedColumnName = "uuid", updatable = false, insertable = false)
   Set<UserOrder> userOrders;
-
-  private Order(long supplierId, long channelId, long purchaserId, OrderStatus status, Set<Proposal> proposals) {
-    this.uuid = randomUUID().toString();
-    this.supplierId = supplierId;
-    this.channelId = channelId;
-    this.purchaserId = purchaserId;
-    this.createdAt = now();
-    this.status = status;
-    this.userOrders = proposals.stream()
-        .map(proposal -> proposal.makeOrderForUser(this.uuid))
-        .collect(toSet());
-  }
 
   private Order(Order order, OrderStatus status) {
     this.id = order.getId();
@@ -78,8 +65,16 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
     this.userOrders = order.getUserOrders();
   }
 
-  static AcceptedOrder acceptOrder(long supplierId, long channelId, Set<Proposal> proposals) {
-    return new Order(supplierId, channelId, getLoggedUserId(), ORDERED, proposals);
+  static AcceptedOrder acceptOrder(String orderUuid, long supplierId, long channelId, Set<UserOrder> userOrders) {
+    return Order.builder()
+        .uuid(orderUuid)
+        .supplierId(supplierId)
+        .channelId(channelId)
+        .purchaserId(getLoggedUserId())
+        .createdAt(now())
+        .status(ORDERED)
+        .userOrders(userOrders)
+        .build();
   }
 
   @Override
@@ -103,10 +98,6 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
 
   @Override
   public AcceptedOrderDto acceptedDto() {
-    final List<UserOrderDto> userOrders = this.userOrders.stream()
-        .map(UserOrder::dto)
-        .collect(toList());
-
     return AcceptedOrderDto.builder()
         .id(this.id)
         .uuid(this.uuid)
@@ -114,23 +105,19 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
         .channelId(this.channelId)
         .purchaserId(this.purchaserId)
         .createdAt(this.createdAt)
-        .userOrders(userOrders)
+        .userOrders(getUserOrdersDto())
         .build();
   }
 
   @Override
   public FinalizedOrderDto finalizedDto() {
-    final List<UserOrderDto> userOrders = this.userOrders.stream()
-        .map(UserOrder::dto)
-        .collect(toList());
-
     return FinalizedOrderDto.builder()
         .id(this.id)
         .supplierId(this.supplierId)
         .channelId(this.channelId)
         .purchaserId(this.purchaserId)
         .createdAt(this.createdAt)
-        .userOrders(userOrders)
+        .userOrders(getUserOrdersDto())
         .build();
   }
 
@@ -146,10 +133,6 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
   }
 
   public OrderWithStatusDto orderWithStatusDto() {
-    final List<UserOrderDto> userOrders = this.userOrders.stream()
-        .map(UserOrder::dto)
-        .collect(toList());
-
     return OrderWithStatusDto.builder()
         .id(this.id)
         .uuid(this.uuid)
@@ -157,8 +140,16 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
         .channelId(this.channelId)
         .purchaserId(this.purchaserId)
         .createdAt(this.createdAt)
-        .userOrders(userOrders)
+        .status(this.status.dto())
+        .userOrders(getUserOrdersDto())
         .build();
+  }
+
+  private List<UserOrderDto> getUserOrdersDto() {
+    return this.userOrders.stream()
+        .map(UserOrder::dto)
+        .flatMap(Collection::stream)
+        .collect(toList());
   }
 
 }

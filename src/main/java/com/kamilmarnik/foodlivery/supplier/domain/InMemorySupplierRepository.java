@@ -4,6 +4,8 @@ import org.springframework.data.domain.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 class InMemorySupplierRepository implements SupplierRepository {
 
@@ -26,8 +28,11 @@ class InMemorySupplierRepository implements SupplierRepository {
   }
 
   @Override
-  public List<Supplier> findAllById(Iterable<Long> iterable) {
-    return null;
+  public List<Supplier> findAllById(Iterable<Long> ids) {
+    return values.values().stream()
+        .filter(supplier ->
+            StreamSupport.stream(ids.spliterator(), false).anyMatch(id -> supplier.getId().equals(id))
+        ).collect(Collectors.toList());
   }
 
   @Override

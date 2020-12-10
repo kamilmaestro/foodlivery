@@ -13,7 +13,7 @@ import static java.util.Objects.requireNonNull;
 
 interface OrderRepository extends JpaRepository<Order, Long> {
 
-  Optional<Order> findBySupplierIdAndChannelIdAndStatus(long supplierId, long channelId, OrderStatus status);
+  Optional<Order> findBySupplierIdAndChannelIdAndStatusNot(long supplierId, long channelId, OrderStatus status);
 
   Optional<Order> findByIdAndStatus(long orderId, OrderStatus status);
 

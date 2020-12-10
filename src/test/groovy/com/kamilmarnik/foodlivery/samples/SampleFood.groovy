@@ -8,7 +8,7 @@ trait SampleFood {
   AddFoodToMenuDto PIZZA = AddFoodToMenuDto.builder().name("Pizza").price(20).build()
 
   private static final Map NEW_FOOD_DEFAULT_VALUES = [
-      "name" : "Supplier",
+      "name" : "Food",
       "supplierId" : "123456789",
       "price" : "10.00"
   ]

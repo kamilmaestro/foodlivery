@@ -1,6 +1,6 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
-import com.kamilmarnik.foodlivery.supplier.domain.Money;
+import com.kamilmarnik.foodlivery.order.dto.ProposalFoodDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,33 +11,32 @@ import javax.persistence.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "ordered_food")
-class OrderedFood {
+@Table(name = "proposal_food")
+class ProposalFood {
 
   @Id
   @Setter(value = AccessLevel.PACKAGE)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
 
-  @Column(name = "user_order_uuid")
-  String userOrderUuid;
+  @Column(name = "proposal_uuid")
+  String proposalUuid;
 
-  @Column(name = "name")
-  String name;
+  @Column(name = "food_id")
+  Long foodId;
 
   @Embedded
   @AttributeOverride(name = "amount", column = @Column(name = "amount_of_food"))
   AmountOfFood amount;
 
-  @Embedded
-  @AttributeOverride(name = "price", column = @Column(name = "price"))
-  Money price;
+  ProposalFood(String proposalUuid, Long foodId, Integer amount) {
+    this.proposalUuid = proposalUuid;
+    this.foodId = foodId;
+    this.amount = new AmountOfFood(amount);
+  }
 
-  OrderedFood(String userOrderUuid, String name, AmountOfFood amount, double price) {
-    this.userOrderUuid = userOrderUuid;
-    this.name = name;
-    this.amount = amount;
-    this.price = new Money(price);
+  ProposalFoodDto dto() {
+    return new ProposalFoodDto(this.foodId, this.amount.getValue());
   }
 
 }

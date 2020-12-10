@@ -16,6 +16,8 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 final class AmountOfFood {
 
+  static final AmountOfFood ONE = new AmountOfFood(1);
+
   int amount;
 
   AmountOfFood(Integer amount) {

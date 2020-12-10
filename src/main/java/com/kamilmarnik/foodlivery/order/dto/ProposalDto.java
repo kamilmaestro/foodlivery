@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -14,12 +15,11 @@ import java.time.LocalDateTime;
 public final class ProposalDto {
 
   long id;
-  long foodId;
-  int foodAmount;
   long supplierId;
   long channelId;
   long createdBy;
   Instant createdAt;
   Instant expirationDate;
+  List<ProposalFoodDto> food;
 
 }

@@ -2,6 +2,7 @@ package com.kamilmarnik.foodlivery.order.domain;
 
 import com.kamilmarnik.foodlivery.infrastructure.PageInfo;
 import com.kamilmarnik.foodlivery.order.dto.*;
+import com.kamilmarnik.foodlivery.order.exception.AnyProposalForSupplierFound;
 import com.kamilmarnik.foodlivery.order.exception.OrderForSupplierAlreadyExists;
 import com.kamilmarnik.foodlivery.order.exception.OrderNotFound;
 import com.kamilmarnik.foodlivery.supplier.domain.SupplierFacade;
@@ -28,7 +29,7 @@ public class OrderFacade {
   OrderCreator orderCreator;
 
   public ProposalDto createProposal(AddProposalDto addProposal) {
-    supplierFacade.checkIfFoodExists(addProposal.getFoodId(), addProposal.getSupplierId());
+    supplierFacade.checkIfFoodExists(addProposal.getFoodIds(), addProposal.getSupplierId());
     final Proposal proposal = orderCreator.createProposal(addProposal);
 
     return proposalRepository.save(proposal).dto();
@@ -39,8 +40,11 @@ public class OrderFacade {
     checkIfOrderForSupplierAlreadyExists(newPurchaser.getSupplierId(), newPurchaser.getChannelId());
     final Set<Proposal> supplierProposals = proposalRepository
         .findAllBySupplierIdAndChannelId(newPurchaser.getSupplierId(), newPurchaser.getChannelId());
+    if (supplierProposals.isEmpty()) {
+      throw new AnyProposalForSupplierFound("Can not find any proposal for the supplier with id: " + newPurchaser.getSupplierId());
+    }
     final AcceptedOrder order = orderCreator
-        .makeOrderForSupplier(newPurchaser.getSupplierId(), supplierProposals, newPurchaser.getChannelId());
+        .makeOrder(newPurchaser.getSupplierId(), supplierProposals, newPurchaser.getChannelId());
 
     return orderRepository.saveAccepted(order).acceptedDto();
   }
@@ -90,7 +94,7 @@ public class OrderFacade {
   }
 
   private void checkIfOrderForSupplierAlreadyExists(long supplierId, long channelId) {
-    orderRepository.findBySupplierIdAndChannelIdAndStatus(supplierId, channelId, ORDERED).ifPresent(order -> {
+    orderRepository.findBySupplierIdAndChannelIdAndStatusNot(supplierId, channelId, FINISHED).ifPresent(order -> {
       throw new OrderForSupplierAlreadyExists(
           "Can not create another order in this channel for the supplier with id: " + order.getSupplierId()
       );

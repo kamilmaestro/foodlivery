@@ -5,6 +5,13 @@ import com.kamilmarnik.foodlivery.order.dto.FinishedOrderDto
 
 class OrderFinishSpec extends BaseOrderSpec {
 
+  def setup() {
+    given: "$JOHN is logged in"
+      logInUser(JOHN)
+    and: "there is a $KRAKOW channel"
+      CHANNEL_ID = channelFacade.createChannel(KRAKOW.name).id
+  }
+
   def "should be able to finish an order" () {
     given: "there is an finalized order for the $PIZZA_RESTAURANT created by $JOHN"
       FinalizedOrderDto finalizedOrder = newFinalizedOrder(PIZZA_RESTAURANT.name)

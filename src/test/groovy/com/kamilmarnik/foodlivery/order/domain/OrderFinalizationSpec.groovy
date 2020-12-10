@@ -8,6 +8,13 @@ import com.kamilmarnik.foodlivery.order.exception.OrderFinalizationForbidden
 
 class OrderFinalizationSpec extends BaseOrderSpec {
 
+  def setup() {
+    given: "$JOHN is logged in"
+      logInUser(JOHN)
+    and: "there is a $KRAKOW channel"
+      CHANNEL_ID = channelFacade.createChannel(KRAKOW.name).id
+  }
+
   def "purchaser should be able to finalize an order" () {
     given: "there is an order for the $PIZZA_RESTAURANT"
       ProposalDto proposal = addProposal(PIZZA_RESTAURANT.name)
@@ -23,8 +30,7 @@ class OrderFinalizationSpec extends BaseOrderSpec {
     and: "this order contains specified info about $JOHN`s order"
       UserOrderDto johnOrder = order.getUserOrders().first()
       johnOrder.orderUuid == order.uuid
-      johnOrder.foodId == proposal.foodId
-      johnOrder.foodAmount == proposal.foodAmount
+      johnOrder.foodAmount == proposal.food.first().foodAmount
       johnOrder.orderedFor == proposal.createdBy && johnOrder.orderedFor == JOHN.userId
   }
 

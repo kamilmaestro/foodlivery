@@ -28,7 +28,7 @@ class OrderConfiguration {
         .timeProvider(timeProvider)
         .proposalRepository(proposalRepository)
         .orderRepository(orderRepository)
-        .orderCreator(new OrderCreator(expirationConfig, timeProvider))
+        .orderCreator(new OrderCreator(supplierFacade, expirationConfig, timeProvider))
         .build();
   }
 

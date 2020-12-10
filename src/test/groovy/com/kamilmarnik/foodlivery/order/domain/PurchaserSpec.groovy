@@ -5,12 +5,21 @@ import com.kamilmarnik.foodlivery.infrastructure.PageInfo
 import com.kamilmarnik.foodlivery.order.dto.AcceptedOrderDto
 import com.kamilmarnik.foodlivery.order.dto.UserOrderDto
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto
+import com.kamilmarnik.foodlivery.order.exception.AnyProposalForSupplierFound
 import com.kamilmarnik.foodlivery.order.exception.CanNotBePurchaser
 import com.kamilmarnik.foodlivery.order.exception.OrderForSupplierAlreadyExists
+import com.kamilmarnik.foodlivery.samples.SampleFood
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
 
 class PurchaserSpec extends BaseOrderSpec {
+
+  def setup() {
+    given: "$JOHN is logged in"
+      logInUser(JOHN)
+    and: "there is a $KRAKOW channel"
+      CHANNEL_ID = channelFacade.createChannel(KRAKOW.name).id
+  }
 
   def "should be able to become a purchaser" () {
     given: "$JOHN creates a proposal with food from the $PIZZA_RESTAURANT"
@@ -25,31 +34,31 @@ class PurchaserSpec extends BaseOrderSpec {
     and: "this order contains specified info about $JOHN`s order"
       UserOrderDto johnOrder = order.getUserOrders().first()
       johnOrder.orderUuid == order.uuid
-      johnOrder.foodId == proposal.foodId
-      johnOrder.foodAmount == proposal.foodAmount
+      johnOrder.foodAmount == proposal.food.first().foodAmount
+      johnOrder.foodName != null
       johnOrder.orderedFor == JOHN.userId
   }
 
-  def "should not become a purchaser when has not previously created a proposal" () {
+  def "should be able to become a purchaser even without creating a proposal" () {
     given: "$JOHN creates a proposal with food from the $PIZZA_RESTAURANT"
-      ProposalDto johnProposal = addProposal(PIZZA_RESTAURANT.name)
+      ProposalDto proposal = addProposal(PIZZA_RESTAURANT.name)
     and: "$MARC is logged in"
       logInUser(MARC)
-    when: "$MARC wants to become a purchaser for orders connected with $PIZZA_RESTAURANT"
-      orderFacade.becomePurchaser(newPurchaser(johnProposal.supplierId, johnProposal.channelId))
-    then: "$MARC can not be a purchaser because he has not created a proposal"
-      thrown(CanNotBePurchaser)
+    when: "$MARC applies himself as the purchaser for the $PIZZA_RESTAURANT"
+      AcceptedOrderDto order = orderFacade.becomePurchaser(newPurchaser(proposal.supplierId, proposal.channelId))
+    then: "$MARC is a purchaser for orders connected with $PIZZA_RESTAURANT"
+      order.purchaserId == MARC.userId
+      order.supplierId == proposal.supplierId
   }
 
-  def "should not become a purchaser when has not previously created a proposal for a specified supplier" () {
-    given: "there is a supplier: $KEBAB_RESTAURANT"
-      SupplierDto supplier = supplierFacade.addSupplier(newSupplier(name: KEBAB_RESTAURANT.name))
-    and: "$JOHN adds a new proposal with food from $PIZZA_RESTAURANT"
-      ProposalDto proposal = addProposal(PIZZA_RESTAURANT.name)
-    when: "$JOHN adds wants to become a purchaser for orders connected with $KEBAB_RESTAURANT"
-      orderFacade.becomePurchaser(newPurchaser(supplier.id, proposal.channelId))
-    then: "$JOHN can not be a purchaser for $KEBAB_RESTAURANT when he has not created a proposal for $KEBAB_RESTAURANT"
-      thrown(CanNotBePurchaser)
+  def "should not become a purchaser when there is no proposal for a specified supplier" () {
+    given: "there is a $PIZZA_RESTAURANT"
+      SupplierDto supplier = supplierFacade.addSupplier(newSupplier(name: PIZZA_RESTAURANT.name))
+    when: "$JOHN applies himself as the purchaser for the $PIZZA_RESTAURANT"
+      orderFacade.becomePurchaser(newPurchaser(supplier.id, CHANNEL_ID))
+    then: "$JOHN is a purchaser for orders connected with $PIZZA_RESTAURANT"
+      thrown(AnyProposalForSupplierFound)
+
   }
 
   def "should convert proposals into orders when user applies as the purchaser for the specified supplier" () {
@@ -70,7 +79,7 @@ class PurchaserSpec extends BaseOrderSpec {
       !userOrders.orderedFor.contains(kevinProposal.createdBy)
   }
 
-  def "should not create another order for the same supplier" () {
+  def "should not create another order for the same supplier in the same channel" () {
     given: "$JOHN has applied himself as the purchaser for the $PIZZA_RESTAURANT"
       ProposalDto johnProposal = addProposal(PIZZA_RESTAURANT.name)
       orderFacade.becomePurchaser(newPurchaser(johnProposal.supplierId, johnProposal.channelId))
@@ -107,8 +116,6 @@ class PurchaserSpec extends BaseOrderSpec {
     then: "$JOHN is a purchaser for orders connected with $PIZZA_RESTAURANT"
       order.purchaserId == JOHN.userId
       order.supplierId == proposal.supplierId
-      order.createdAt != null
-      order.uuid != null
     and: "this proposal is closed and converted to an order"
       orderFacade.findChannelProposals(proposal.channelId, PageInfo.DEFAULT).content == []
   }

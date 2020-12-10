@@ -27,9 +27,7 @@ abstract class BaseOrderSpec extends BaseChannelSpec implements SampleUsers, Sam
   static Long CHANNEL_ID = null
 
   def setup() {
-    logInUser(JOHN)
     expirationConfig.setExpirationAfterMinutes(180)
-    CHANNEL_ID = channelFacade.createChannel(KRAKOW.name).id
   }
 
   FinalizedOrderDto newFinalizedOrder(String supplierName) {

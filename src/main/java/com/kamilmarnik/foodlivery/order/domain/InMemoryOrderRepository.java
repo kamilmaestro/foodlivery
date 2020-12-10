@@ -155,11 +155,11 @@ class InMemoryOrderRepository implements OrderRepository {
   }
 
   @Override
-  public Optional<Order> findBySupplierIdAndChannelIdAndStatus(long supplierId, long channelId, OrderStatus status) {
+  public Optional<Order> findBySupplierIdAndChannelIdAndStatusNot(long supplierId, long channelId, OrderStatus status) {
     return values.values().stream()
         .filter(order -> order.getSupplierId().equals(supplierId) &&
             order.getChannelId().equals(channelId) &&
-            order.getStatus().equals(status)
+            !order.getStatus().equals(status)
         ).findFirst();
   }
 

@@ -15,20 +15,20 @@ import static java.math.RoundingMode.HALF_UP;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Embeddable
 @FieldDefaults(level = AccessLevel.PRIVATE)
-final class Money {
+public final class Money {
 
   private static final int DECIMAL_PLACES = 2;
 
   BigDecimal price;
 
-  Money(Double price) {
+  public Money(Double price) {
     this.price = Optional.ofNullable(price)
       .filter(this::isMoney)
       .map(BigDecimal::valueOf)
       .orElseThrow(() -> new InvalidFoodPrice("Can not add a food with price: " + price));
   }
 
-  double getValueAsDouble() {
+  public double getValueAsDouble() {
     return this.price.setScale(DECIMAL_PLACES, HALF_UP).doubleValue();
   }
 

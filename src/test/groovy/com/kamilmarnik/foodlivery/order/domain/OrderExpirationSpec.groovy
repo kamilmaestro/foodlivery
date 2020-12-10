@@ -11,6 +11,10 @@ class OrderExpirationSpec extends BaseOrderSpec {
   def setup() {
     given: "proposals expire after 3 hours"
       expirationConfig.setExpirationAfterMinutes(180)
+    and: "$JOHN is logged in"
+      logInUser(JOHN)
+    and: "there is a $KRAKOW channel"
+      CHANNEL_ID = channelFacade.createChannel(KRAKOW.name).id
   }
 
   def "proposals should be expired after specified amount of time" () {

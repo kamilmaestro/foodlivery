@@ -1,13 +1,20 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
 import com.kamilmarnik.foodlivery.order.dto.UserOrderDto;
+import com.kamilmarnik.foodlivery.supplier.domain.Money;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
+import static java.util.stream.Collectors.toList;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -16,40 +23,48 @@ import static java.time.LocalDateTime.now;
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "user_orders")
-class UserOrder {
+class UserOrder implements Serializable {
 
   @Setter(value = AccessLevel.PACKAGE)
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
 
+  @Column(name = "uuid")
+  String uuid;
+
   @Column(name = "order_uuid")
   String orderUuid;
-
-  @Embedded
-  @AttributeOverrides({
-      @AttributeOverride(name = "foodId", column = @Column(name = "food_id")),
-      @AttributeOverride(name = "amount.amount", column = @Column(name = "amount_of_food"))
-  })
-  OrderedFood orderedFood;
 
   @Column(name = "ordered_for")
   Long orderedFor;
 
-  UserOrder(String orderUuid, OrderedFood orderedFood, Long orderedFor) {
+  @Column(name = "created_at")
+  Instant createdAt;
+
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  @JoinColumn(name = "user_order_uuid", referencedColumnName = "uuid", updatable = false, insertable = false)
+  Set<OrderedFood> food;
+
+  UserOrder(String userOrderUuid, String orderUuid, Long orderedFor, Set<OrderedFood> orderedFood) {
+    this.uuid = userOrderUuid;
     this.orderUuid = orderUuid;
-    this.orderedFood = orderedFood;
     this.orderedFor = orderedFor;
+    this.food = orderedFood;
   }
 
-  UserOrderDto dto() {
-    return UserOrderDto.builder()
-        .id(this.id)
-        .orderUuid(this.orderUuid)
-        .foodId(this.orderedFood.getFoodId())
-        .foodAmount(this.orderedFood.getAmount().getValue())
-        .orderedFor(this.orderedFor)
-        .build();
+  List<UserOrderDto> dto() {
+    return this.food.stream()
+        .map(food ->
+            UserOrderDto.builder()
+                .id(this.id)
+                .orderUuid(this.orderUuid)
+                .foodName(food.getName())
+                .foodAmount(food.getAmount().getValue())
+                .foodPrice(food.getPrice().getValueAsDouble())
+                .orderedFor(this.orderedFor)
+                .build()
+        ).collect(toList());
   }
 
 }
