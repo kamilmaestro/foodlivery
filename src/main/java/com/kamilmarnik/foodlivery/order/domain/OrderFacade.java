@@ -27,6 +27,7 @@ public class OrderFacade {
   ProposalRepository proposalRepository;
   OrderRepository orderRepository;
   OrderCreator orderCreator;
+  OrderEventPublisher eventPublisher;
 
   public ProposalDto createProposal(AddProposalDto addProposal) {
     supplierFacade.checkIfFoodExists(addProposal.getFoodIds(), addProposal.getSupplierId());
@@ -65,9 +66,10 @@ public class OrderFacade {
 
   public FinishedOrderDto finishOrder(long orderId) {
     final FinalizedOrder finalizedOrder = getOrder(orderId, FINALIZED);
-    final FinishedOrder finishedOrder = finalizedOrder.finishOrder();
+    final FinishedOrderDto finishedOrder = orderRepository.saveFinished(finalizedOrder.finishOrder()).finishedDto();
+    eventPublisher.notifyOrderFinish(finishedOrder);
 
-    return orderRepository.saveFinished(finishedOrder).finishedDto();
+    return finishedOrder;
   }
 
   public Page<ProposalDto> findChannelProposals(long channelId, PageInfo pageInfo) {

@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -18,5 +19,6 @@ public final class FinishedOrderDto {
   long channelId;
   long purchaserId;
   Instant createdAt;
+  List<UserOrderDto> userOrders;
 
 }

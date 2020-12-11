@@ -129,6 +129,7 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
         .channelId(this.channelId)
         .purchaserId(this.purchaserId)
         .createdAt(this.createdAt)
+        .userOrders(getUserOrdersDto())
         .build();
   }
 
