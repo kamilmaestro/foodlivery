@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-class OrderConfiguration {
+public class OrderConfiguration {
 
-  OrderFacade orderFacade(SupplierFacade supplierFacade,
+  public OrderFacade orderFacade(SupplierFacade supplierFacade,
                           OrderExpirationConfig expirationConfig,
                           TimeProvider timeProvider,
                           ApplicationEventPublisher eventPublisher) {

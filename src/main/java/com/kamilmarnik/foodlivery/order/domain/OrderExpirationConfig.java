@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 @ConfigurationProperties(prefix = "application.order")
-final class OrderExpirationConfig {
+public final class OrderExpirationConfig {
 
   private int expirationAfterMinutes;
 

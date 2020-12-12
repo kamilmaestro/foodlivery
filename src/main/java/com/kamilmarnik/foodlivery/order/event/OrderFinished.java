@@ -4,12 +4,14 @@ import com.kamilmarnik.foodlivery.order.dto.UserOrderDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
 import java.util.Collection;
 
 @Builder
+@Getter
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public final class OrderFinished {
 
@@ -21,6 +23,7 @@ public final class OrderFinished {
   Collection<UserOrderFinished> userOrders;
 
   @Builder
+  @Getter
   @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
   public static final class UserOrderFinished {
 

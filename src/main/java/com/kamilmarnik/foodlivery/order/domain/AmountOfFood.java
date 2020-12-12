@@ -14,17 +14,17 @@ import java.util.Optional;
 @Embeddable
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-final class AmountOfFood {
+public final class AmountOfFood {
 
   static final AmountOfFood ONE = new AmountOfFood(1);
 
   int amount;
 
-  AmountOfFood(Integer amount) {
+  public AmountOfFood(Integer amount) {
     this.amount = getVerifiedAmountOfFood(amount);
   }
 
-  int getValue() {
+  public int getValue() {
     return this.amount;
   }
 
