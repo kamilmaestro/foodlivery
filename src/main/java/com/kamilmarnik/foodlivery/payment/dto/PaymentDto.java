@@ -19,6 +19,7 @@ public final class PaymentDto {
   long channelId;
   double price;
   Instant createdAt;
+  PaymentStatusDto status;
   List<PaymentDetailsDto> details;
 
   @Getter

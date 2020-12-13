@@ -4,7 +4,6 @@ import com.kamilmarnik.foodlivery.infrastructure.PageInfo
 import com.kamilmarnik.foodlivery.order.dto.AcceptedOrderDto
 import com.kamilmarnik.foodlivery.order.dto.FinalizedOrderDto
 import com.kamilmarnik.foodlivery.order.dto.FinishedOrderDto
-import com.kamilmarnik.foodlivery.order.dto.ProposalDto
 import com.kamilmarnik.foodlivery.order.dto.UserOrderDto
 import com.kamilmarnik.foodlivery.payment.dto.PaymentDto
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto
@@ -14,7 +13,10 @@ import spock.lang.Unroll
 
 import java.time.Instant
 
-class PaymentCreationSpec extends BasePaymentSpec {
+import static com.kamilmarnik.foodlivery.payment.dto.PaymentStatusDto.PAID_BY_PAYER
+import static com.kamilmarnik.foodlivery.payment.dto.PaymentStatusDto.TO_PAY
+
+class PaymentSpec extends BasePaymentSpec {
 
   private static final Instant NOW = Instant.now()
   private static final double FOOD_PRICE = 10.0
@@ -43,28 +45,22 @@ class PaymentCreationSpec extends BasePaymentSpec {
       orderTemplate = new OrderTemplate(finishedOrder)
   }
 
-  @Unroll
   def "should create a new payment after finish of an order" () {
-    given: "$user is logged in"
-      logInUser(user)
-    when: "order is finished"
+    when: "order is finished by $JOHN"
       paymentFacade.onOrderFinished(orderTemplate.finished(NOW))
-    then: "$user sees new payment"
-      PaymentDto payment = paymentFacade.findUserCharges(PageInfo.DEFAULT).content
-          .find({ p -> p.getPayerId() == user.userId })
-      payment.purchaserId == purchaserId
-      payment.payerId == user.userId
+    then: "$MARC sees new payment"
+      logInUser(MARC)
+      PaymentDto payment = paymentFacade.findUserCharges(PageInfo.DEFAULT).content.first()
+      payment.purchaserId == JOHN.userId
+      payment.payerId == MARC.userId
       payment.supplierId == finishedOrder.supplierId
       payment.channelId == finishedOrder.channelId
-      payment.price == price
-      UserOrderDto userOrder = finishedOrder.userOrders.find({ o -> o.getOrderedFor() == user.userId })
-      payment.details.foodName == [userOrder.foodName]
-      payment.details.foodAmount == [userOrder.foodAmount]
-      payment.details.foodPrice == [userOrder.foodPrice]
-    where:
-      user  ||  purchaserId  || price
-      JOHN  ||  JOHN.userId  || FOOD_PRICE
-      MARC  ||  JOHN.userId  || FOOD_PRICE * 2
+      payment.price == FOOD_PRICE * 2
+      payment.createdAt == NOW
+      UserOrderDto marcOrder = finishedOrder.userOrders.find({ o -> o.getOrderedFor() == MARC.userId })
+      payment.details.foodName == [marcOrder.foodName]
+      payment.details.foodAmount == [marcOrder.foodAmount]
+      payment.details.foodPrice == [marcOrder.foodPrice]
   }
 
   @Unroll
@@ -77,7 +73,7 @@ class PaymentCreationSpec extends BasePaymentSpec {
       paymentFacade.findUserMoneyDue(PageInfo.DEFAULT).content.size() == dueSize
     where:
       user  ||  dueSize
-      JOHN  ||  2
+      JOHN  ||  1
       MARC  ||  0
   }
 
@@ -88,11 +84,51 @@ class PaymentCreationSpec extends BasePaymentSpec {
     and: "$user is logged in"
       logInUser(user)
     expect: "$user sees his charges"
-      paymentFacade.findUserCharges(PageInfo.DEFAULT).content.price == toPay
+      List<PaymentDto> charges = paymentFacade.findUserCharges(PageInfo.DEFAULT).content
+      charges.price == toPay
+      charges.status == status
     where:
-      user  ||  toPay
-      JOHN  ||  [FOOD_PRICE]
-      MARC  ||  [FOOD_PRICE * 2]
+      user  ||  toPay             ||  status
+      JOHN  ||  []                ||  []
+      MARC  ||  [FOOD_PRICE * 2]  ||  [TO_PAY]
+  }
+
+  def "payment is paid off only when purchaser marks it as paid off" () {
+    given: "order is finished"
+      paymentFacade.onOrderFinished(orderTemplate.finished(NOW))
+    and: "$MARC is logged in"
+      logInUser(MARC)
+      PaymentDto marcPayment = paymentFacade.findUserCharges(PageInfo.DEFAULT).content.first()
+    and: "$MARC pays off his charges"
+      paymentFacade.marksAsPaidOff(marcPayment.id)
+    and: "$JOHN is logged in"
+      logInUser(JOHN)
+    when: "$JOHN marks $MARC's payment as paid off"
+      paymentFacade.marksAsPaidOff(marcPayment.id)
+    then: "$JOHN has no longer any due"
+      paymentFacade.findUserMoneyDue(PageInfo.DEFAULT).isEmpty()
+    and: "$MARC has no longer any charges"
+      logInUser(MARC)
+      paymentFacade.findUserCharges(PageInfo.DEFAULT).isEmpty()
+  }
+
+  def "should have still charges when payment was not marked as paid off by the purchaser" () {
+    given: "order is finished"
+      paymentFacade.onOrderFinished(orderTemplate.finished(NOW))
+    and: "$MARC is logged in"
+      logInUser(MARC)
+      PaymentDto marcPayment = paymentFacade.findUserCharges(PageInfo.DEFAULT).content.first()
+    when: "$MARC pays off his charges"
+      paymentFacade.marksAsPaidOff(marcPayment.id)
+    then: "$MARC still has a payment to be paid off"
+      paymentFacade.findUserCharges(PageInfo.DEFAULT).content.status == [PAID_BY_PAYER]
+  }
+
+  def "should not see any charges when is a purchaser as well" () {
+    when: "$JOHN checks his charges"
+      List<PaymentDto> charges = paymentFacade.findUserCharges(PageInfo.DEFAULT).content
+    then: "he has nothing to be paid off"
+      charges.isEmpty()
   }
 
 }

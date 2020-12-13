@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.kamilmarnik.foodlivery.payment.domain.PaymentStatus.PAID_OFF;
+import static com.kamilmarnik.foodlivery.payment.domain.PaymentStatus.TO_PAY;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toSet;
 
@@ -43,8 +45,13 @@ final class PaymentCreator {
         .channelId(order.getChannelId())
         .toPay(calculateOrderPrice(userOrders))
         .createdAt(order.getFinishedAt())
+        .status(isUserPurchaser(order, userId) ? PAID_OFF : TO_PAY)
         .paymentDetails(paymentDetails)
         .build();
+  }
+
+  private boolean isUserPurchaser(OrderFinished order, long userId) {
+    return userId == order.getPurchaserId();
   }
 
   private PaymentDetails createPaymentDetails(String paymentUuid, OrderFinished.UserOrderFinished userOrder) {

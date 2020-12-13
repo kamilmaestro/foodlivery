@@ -81,8 +81,10 @@ class InMemoryPaymentRepository implements PaymentRepository {
   }
 
   @Override
-  public Optional<Payment> findById(Long aLong) {
-    return Optional.empty();
+  public Optional<Payment> findById(Long id) {
+    return values.values().stream()
+        .filter(payment -> payment.getId().equals(id))
+        .findFirst();
   }
 
   @Override
@@ -146,16 +148,16 @@ class InMemoryPaymentRepository implements PaymentRepository {
   }
 
   @Override
-  public Page<Payment> findAllByPayerId(long userId, Pageable pageable) {
+  public Page<Payment> findAllByPayerIdAndStatusNot(long userId, PaymentStatus status, Pageable pageable) {
     return new PageImpl<>(values.values().stream()
-        .filter(payment -> payment.getPayerId() == userId)
+        .filter(payment -> payment.getPayerId() == userId && !payment.getStatus().equals(status))
         .collect(Collectors.toList()));
   }
 
   @Override
-  public Page<Payment> findAllByPurchaserId(long userId, Pageable pageable) {
+  public Page<Payment> findAllByPurchaserIdAndStatusNot(long userId, PaymentStatus status, Pageable pageable) {
     return new PageImpl<>(values.values().stream()
-        .filter(payment -> payment.getPurchaserId() == userId)
+        .filter(payment -> payment.getPurchaserId() == userId && !payment.getStatus().equals(status))
         .collect(Collectors.toList()));
   }
 
