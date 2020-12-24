@@ -6,13 +6,12 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public final class OrderWithStatusDto {
+public final class OrderDto {
 
   long id;
   String uuid;
@@ -22,10 +21,5 @@ public final class OrderWithStatusDto {
   Instant createdAt;
   OrderStatusDto status;
   List<UserOrderDto> userOrders;
-
-  public enum OrderStatusDto {
-    FINALIZED,
-    ORDERED
-  }
 
 }

@@ -1,10 +1,9 @@
 package com.kamilmarnik.foodlivery.payment.domain
 
 import com.kamilmarnik.foodlivery.infrastructure.PageInfo
-import com.kamilmarnik.foodlivery.order.dto.AcceptedOrderDto
-import com.kamilmarnik.foodlivery.order.dto.FinalizedOrderDto
-import com.kamilmarnik.foodlivery.order.dto.FinishedOrderDto
-import com.kamilmarnik.foodlivery.order.dto.UserOrderDto
+
+import com.kamilmarnik.foodlivery.order.dto.OrderDto
+import com.kamilmarnik.foodlivery.order.dto.OrderedFoodDto
 import com.kamilmarnik.foodlivery.payment.dto.PaymentDto
 import com.kamilmarnik.foodlivery.supplier.dto.FoodDto
 import com.kamilmarnik.foodlivery.supplier.dto.SupplierDto
@@ -22,7 +21,7 @@ class PaymentSpec extends BasePaymentSpec {
   private static final double FOOD_PRICE = 10.0
 
   private OrderTemplate orderTemplate
-  private FinishedOrderDto finishedOrder
+  private OrderDto finishedOrder
 
   def setup() {
     given: "$JOHN is logged in"
@@ -39,8 +38,8 @@ class PaymentSpec extends BasePaymentSpec {
       orderFacade.createProposal(newProposal(supplierId: supplier.id, foodId: food.id, amountOfFood: 2, channelId: CHANNEL_ID))
     and: "an order finished by $JOHN"
       logInUser(JOHN)
-      AcceptedOrderDto acceptedOrder = orderFacade.becomePurchaser(newPurchaser(supplier.id, CHANNEL_ID))
-      FinalizedOrderDto finalizedOrder = orderFacade.finalizeOrder(acceptedOrder.id)
+      OrderDto acceptedOrder = orderFacade.becomePurchaser(newPurchaser(supplier.id, CHANNEL_ID))
+      OrderDto finalizedOrder = orderFacade.finalizeOrder(acceptedOrder.id)
       finishedOrder = orderFacade.finishOrder(finalizedOrder.id)
       orderTemplate = new OrderTemplate(finishedOrder)
   }
@@ -57,10 +56,12 @@ class PaymentSpec extends BasePaymentSpec {
       payment.channelId == finishedOrder.channelId
       payment.price == FOOD_PRICE * 2
       payment.createdAt == NOW
-      UserOrderDto marcOrder = finishedOrder.userOrders.find({ o -> o.getOrderedFor() == MARC.userId })
-      payment.details.foodName == [marcOrder.foodName]
-      payment.details.foodAmount == [marcOrder.foodAmount]
-      payment.details.foodPrice == [marcOrder.foodPrice]
+      List<OrderedFoodDto> marcOrderedFood = finishedOrder.userOrders
+          .find({ o -> o.getOrderedFor() == MARC.userId })
+          .orderedFood
+      payment.details.foodName == [marcOrderedFood.first().foodName]
+      payment.details.amountOfFood == [marcOrderedFood.first().amountOfFood]
+      payment.details.foodPrice == [marcOrderedFood.first().foodPrice]
   }
 
   @Unroll

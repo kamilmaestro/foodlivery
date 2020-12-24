@@ -63,6 +63,11 @@ public class ChannelFacade {
         .collect(Collectors.toList());
   }
 
+  public Page<ChannelDto> findChannelsByIds(Collection<Long> channelIds, PageInfo pageInfo) {
+    return channelRepository.getByIdIn(channelIds, pageInfo.toPageRequest())
+        .map(Channel::dto);
+  }
+
   private ChannelMember joinChannel(Channel channel) {
     return channelMemberRepository.findByChannelIdAndMemberId(channel.getId(), getLoggedUserId())
         .orElseGet(() -> {

@@ -175,4 +175,9 @@ class InMemoryOrderRepository implements OrderRepository {
     return null;
   }
 
+  @Override
+  public Page<Order> findAllUserOrders(long userId, Pageable pageable) {
+    return null;
+  }
+
 }

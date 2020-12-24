@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.Optional;
 
@@ -20,13 +21,18 @@ public final class PageInfo {
   Integer pageSize;
 
   public PageRequest toPageRequest() {
+    return toPageRequest(Sort.unsorted());
+  }
+
+  public PageRequest toPageRequest(Sort sort) {
     return PageRequest.of(
         Optional.ofNullable(pageNumber)
             .filter(number -> number >= 0)
             .orElse(DEFAULT_PAGE_NUMBER),
         Optional.ofNullable(pageSize)
             .filter(size -> size > 0)
-            .orElse(DEFAULT_PAGE_SIZE)
+            .orElse(DEFAULT_PAGE_SIZE),
+        sort
     );
   }
 

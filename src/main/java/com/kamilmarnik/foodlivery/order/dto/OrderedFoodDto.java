@@ -5,20 +5,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Getter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public final class FinalizedOrderDto {
+public final class OrderedFoodDto {
 
-  long id;
-  long supplierId;
-  long channelId;
-  long purchaserId;
-  Instant createdAt;
-  List<UserOrderDto> userOrders;
+  String userOrderUuid;
+  String foodName;
+  int amountOfFood;
+  double foodPrice;
 
 }

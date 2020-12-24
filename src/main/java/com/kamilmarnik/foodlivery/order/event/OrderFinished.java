@@ -1,14 +1,17 @@
 package com.kamilmarnik.foodlivery.order.event;
 
 import com.kamilmarnik.foodlivery.order.dto.UserOrderDto;
+import com.kamilmarnik.foodlivery.order.dto.UserOrderWithFoodDto;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Builder
 @Getter
@@ -29,16 +32,19 @@ public final class OrderFinished {
 
     long userId;
     String foodName;
-    int foodAmount;
+    int amountOfFood;
     double foodPrice;
 
-    public static UserOrderFinished fromDto(UserOrderDto dto) {
-      return UserOrderFinished.builder()
-          .userId(dto.getOrderedFor())
-          .foodName(dto.getFoodName())
-          .foodAmount(dto.getFoodAmount())
-          .foodPrice(dto.getFoodPrice())
-          .build();
+    public static Collection<UserOrderFinished> fromDto(UserOrderDto dto) {
+      return dto.getOrderedFood().stream()
+          .map(orderedFood -> {
+            return UserOrderFinished.builder()
+                .userId(dto.getOrderedFor())
+                .foodName(orderedFood.getFoodName())
+                .amountOfFood(orderedFood.getAmountOfFood())
+                .foodPrice(orderedFood.getFoodPrice())
+                .build();
+          }).collect(toList());
     }
 
   }

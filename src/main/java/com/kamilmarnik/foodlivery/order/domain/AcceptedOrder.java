@@ -1,10 +1,10 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
-import com.kamilmarnik.foodlivery.order.dto.AcceptedOrderDto;
+import com.kamilmarnik.foodlivery.order.dto.OrderDto;
 
 interface AcceptedOrder {
 
-  AcceptedOrderDto acceptedDto();
+  OrderDto acceptedDto();
 
   FinalizedOrder finalizeOrder();
 

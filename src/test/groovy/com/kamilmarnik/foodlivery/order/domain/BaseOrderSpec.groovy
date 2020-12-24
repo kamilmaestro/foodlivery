@@ -2,9 +2,8 @@ package com.kamilmarnik.foodlivery.order.domain
 
 import com.kamilmarnik.foodlivery.SecurityContextProvider
 import com.kamilmarnik.foodlivery.channel.domain.BaseChannelSpec
-import com.kamilmarnik.foodlivery.order.dto.AcceptedOrderDto
-import com.kamilmarnik.foodlivery.order.dto.FinalizedOrderDto
-import com.kamilmarnik.foodlivery.order.dto.FinishedOrderDto
+
+import com.kamilmarnik.foodlivery.order.dto.OrderDto
 import com.kamilmarnik.foodlivery.order.dto.ProposalDto
 import com.kamilmarnik.foodlivery.samples.SampleChannels
 import com.kamilmarnik.foodlivery.samples.SampleFood
@@ -31,12 +30,13 @@ abstract class BaseOrderSpec extends BaseChannelSpec implements SampleUsers, Sam
 
   def setup() {
     expirationConfig.setExpirationAfterMinutes(180)
+    logInUser(JOHN)
     CHANNEL_ID = channelFacade.createChannel("channel").id
   }
 
-  FinalizedOrderDto newFinalizedOrder(String supplierName) {
+  OrderDto newFinalizedOrder(String supplierName) {
     ProposalDto proposal = addProposal(supplierName)
-    AcceptedOrderDto order = orderFacade.becomePurchaser(newPurchaser(proposal.supplierId, proposal.channelId))
+    OrderDto order = orderFacade.becomePurchaser(newPurchaser(proposal.supplierId, proposal.channelId))
 
     return orderFacade.finalizeOrder(order.id)
   }

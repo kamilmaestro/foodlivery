@@ -29,7 +29,7 @@ public final class PaymentDto {
   public static final class PaymentDetailsDto {
 
     String foodName;
-    int foodAmount;
+    int amountOfFood;
     double foodPrice;
 
   }

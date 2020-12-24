@@ -1,5 +1,6 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
+import com.kamilmarnik.foodlivery.order.dto.OrderedFoodDto;
 import com.kamilmarnik.foodlivery.supplier.domain.Money;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,7 +27,7 @@ class OrderedFood {
   String name;
 
   @Embedded
-  @AttributeOverride(name = "amount", column = @Column(name = "amount_of_food"))
+  @AttributeOverride(name = "amount", column = @Column(name = "amount"))
   AmountOfFood amount;
 
   @Embedded
@@ -38,6 +39,15 @@ class OrderedFood {
     this.name = name;
     this.amount = amount;
     this.price = new Money(price);
+  }
+
+  OrderedFoodDto dto() {
+    return OrderedFoodDto.builder()
+        .userOrderUuid(this.userOrderUuid)
+        .foodName(this.name)
+        .amountOfFood(this.amount.getValue())
+        .foodPrice(this.price.getValueAsDouble())
+        .build();
   }
 
 }

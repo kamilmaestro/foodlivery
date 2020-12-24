@@ -1,6 +1,7 @@
 package com.kamilmarnik.foodlivery.utils
 
-import com.kamilmarnik.foodlivery.order.dto.FinishedOrderDto
+
+import com.kamilmarnik.foodlivery.order.dto.OrderDto
 import com.kamilmarnik.foodlivery.order.event.OrderFinished
 import com.kamilmarnik.foodlivery.samples.SampleChannels
 import com.kamilmarnik.foodlivery.samples.SampleFood
@@ -13,9 +14,9 @@ import java.util.stream.Collectors
 
 class OrderTemplate implements SampleUsers, SampleSuppliers, SampleOrders, SampleFood, SampleChannels {
 
-  private final FinishedOrderDto finishedOrder
+  private final OrderDto finishedOrder
 
-  OrderTemplate(FinishedOrderDto finishedOrder) {
+  OrderTemplate(OrderDto finishedOrder) {
     this.finishedOrder = finishedOrder
   }
 
@@ -23,6 +24,7 @@ class OrderTemplate implements SampleUsers, SampleSuppliers, SampleOrders, Sampl
   OrderFinished finished(Instant time) {
     final List<OrderFinished.UserOrderFinished> userOrders = finishedOrder.getUserOrders().stream()
         .map({ order ->  OrderFinished.UserOrderFinished.fromDto(order) })
+        .flatMap({ orders -> orders.stream() })
         .collect(Collectors.toList())
 
     return OrderFinished.builder()

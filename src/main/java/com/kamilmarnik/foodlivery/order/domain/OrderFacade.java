@@ -11,10 +11,13 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUserGetter.getLoggedUserId;
 import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.*;
 import static com.kamilmarnik.foodlivery.order.domain.ProposalStatus.WAITING;
 
@@ -36,7 +39,7 @@ public class OrderFacade {
     return proposalRepository.save(proposal).dto();
   }
 
-  public AcceptedOrderDto becomePurchaser(NewPurchaserDto newPurchaser) {
+  public OrderDto becomePurchaser(NewPurchaserDto newPurchaser) {
     supplierFacade.checkIfSupplierExists(newPurchaser.getSupplierId());
     checkIfOrderForSupplierAlreadyExists(newPurchaser.getSupplierId(), newPurchaser.getChannelId());
     final Set<Proposal> supplierProposals = proposalRepository
@@ -50,23 +53,23 @@ public class OrderFacade {
     return orderRepository.saveAccepted(order).acceptedDto();
   }
 
-  public FinalizedOrderDto finalizeOrder(long orderId) {
+  public OrderDto finalizeOrder(long orderId) {
     final AcceptedOrder order = getOrder(orderId, ORDERED);
     final FinalizedOrder finalizedOrder = order.finalizeOrder();
 
     return orderRepository.saveFinalized(finalizedOrder).finalizedDto();
   }
 
-  public FinalizedOrderDto removeUserOrder(long userOrderId, long orderId) {
+  public OrderDto removeUserOrder(long userOrderId, long orderId) {
     final FinalizedOrder finalizedOrder = getOrder(orderId, FINALIZED);
     final FinalizedOrder withoutRemovedUserOrder = finalizedOrder.removeUserOrder(userOrderId);
 
     return orderRepository.saveFinalized(withoutRemovedUserOrder).finalizedDto();
   }
 
-  public FinishedOrderDto finishOrder(long orderId) {
+  public OrderDto finishOrder(long orderId) {
     final FinalizedOrder finalizedOrder = getOrder(orderId, FINALIZED);
-    final FinishedOrderDto finishedOrder = orderRepository.saveFinished(finalizedOrder.finishOrder()).finishedDto();
+    final OrderDto finishedOrder = orderRepository.saveFinished(finalizedOrder.finishOrder()).finishedDto();
     eventPublisher.notifyOrderFinish(finishedOrder);
 
     return finishedOrder;
@@ -77,13 +80,21 @@ public class OrderFacade {
         .map(Proposal::dto);
   }
 
-  public Page<OrderWithStatusDto> findNotFinishedOrders(long channelId, PageInfo pageInfo) {
+  public Page<SimplifiedOrderDto> findNotFinishedOrders(long channelId, PageInfo pageInfo) {
     return orderRepository.findAllByChannelIdAndStatusNot(channelId, FINISHED, pageInfo.toPageRequest())
-        .map(Order::orderWithStatusDto);
+        .map(Order::simplifiedDto);
   }
 
-  public AcceptedOrderDto getOrderDto(long id) {
-    return getOrder(id, ORDERED).acceptedDto();
+  public OrderDto getOrderDto(long id) {
+    return orderRepository.findById(id)
+        .orElseThrow(() -> new OrderNotFound(id))
+        .dto();
+  }
+
+  public Page<OrderIdentityDto> findUserOrders(PageInfo pageInfo) {
+    final PageRequest pageRequest = pageInfo.toPageRequest(Sort.by("createdAt").descending());
+    return orderRepository.findAllUserOrders(getLoggedUserId(), pageRequest)
+        .map(Order::identityDto);
   }
 
   void updateExpiredProposals() {

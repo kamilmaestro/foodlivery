@@ -1,6 +1,6 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
-import com.kamilmarnik.foodlivery.order.dto.OrderWithStatusDto;
+import com.kamilmarnik.foodlivery.order.dto.OrderStatusDto;
 
 enum OrderStatus {
 
@@ -8,12 +8,14 @@ enum OrderStatus {
   FINISHED,
   ORDERED;
 
-  OrderWithStatusDto.OrderStatusDto dto() {
+  OrderStatusDto dto() {
     switch (this) {
-      case ORDERED:
-        return OrderWithStatusDto.OrderStatusDto.ORDERED;
       case FINALIZED:
-        return OrderWithStatusDto.OrderStatusDto.FINALIZED;
+        return OrderStatusDto.FINALIZED;
+      case FINISHED:
+        return OrderStatusDto.FINISHED;
+      case ORDERED:
+        return OrderStatusDto.ORDERED;
       default:
         throw new IllegalStateException("Can not obtain order status dto");
     }

@@ -1,7 +1,8 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
+import com.kamilmarnik.foodlivery.order.dto.OrderedFoodDto;
 import com.kamilmarnik.foodlivery.order.dto.UserOrderDto;
-import com.kamilmarnik.foodlivery.supplier.domain.Money;
+import com.kamilmarnik.foodlivery.order.dto.UserOrderWithFoodDto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.time.LocalDateTime.now;
+import static java.time.Instant.now;
 import static java.util.stream.Collectors.toList;
 
 @Entity
@@ -51,16 +52,31 @@ class UserOrder implements Serializable {
     this.orderUuid = orderUuid;
     this.orderedFor = orderedFor;
     this.food = orderedFood;
+    this.createdAt = now();
   }
 
-  List<UserOrderDto> dto() {
+  UserOrderDto dto() {
+    final List<OrderedFoodDto> foodDto = this.food.stream()
+        .map(OrderedFood::dto)
+        .collect(toList());
+
+    return UserOrderDto.builder()
+        .id(this.id)
+        .orderUuid(this.orderUuid)
+        .orderedFor(this.orderedFor)
+        .createdAt(this.createdAt)
+        .orderedFood(foodDto)
+        .build();
+  }
+
+  List<UserOrderWithFoodDto> withFoodDto() {
     return this.food.stream()
         .map(food ->
-            UserOrderDto.builder()
+            UserOrderWithFoodDto.builder()
                 .id(this.id)
                 .orderUuid(this.orderUuid)
                 .foodName(food.getName())
-                .foodAmount(food.getAmount().getValue())
+                .amountOfFood(food.getAmount().getValue())
                 .foodPrice(food.getPrice().getValueAsDouble())
                 .orderedFor(this.orderedFor)
                 .build()

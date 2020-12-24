@@ -12,6 +12,6 @@ import lombok.experimental.FieldDefaults;
 public final class ProposalFoodDto {
 
   long foodId;
-  int foodAmount;
+  int amountOfFood;
 
 }

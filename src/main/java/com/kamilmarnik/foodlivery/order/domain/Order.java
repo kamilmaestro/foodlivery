@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUserGetter.getLoggedUserId;
 import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.*;
@@ -97,44 +98,22 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
   }
 
   @Override
-  public AcceptedOrderDto acceptedDto() {
-    return AcceptedOrderDto.builder()
-        .id(this.id)
-        .uuid(this.uuid)
-        .supplierId(this.supplierId)
-        .channelId(this.channelId)
-        .purchaserId(this.purchaserId)
-        .createdAt(this.createdAt)
-        .userOrders(getUserOrdersDto())
-        .build();
+  public OrderDto acceptedDto() {
+    return dto();
   }
 
   @Override
-  public FinalizedOrderDto finalizedDto() {
-    return FinalizedOrderDto.builder()
-        .id(this.id)
-        .supplierId(this.supplierId)
-        .channelId(this.channelId)
-        .purchaserId(this.purchaserId)
-        .createdAt(this.createdAt)
-        .userOrders(getUserOrdersDto())
-        .build();
+  public OrderDto finalizedDto() {
+    return dto();
   }
 
   @Override
-  public FinishedOrderDto finishedDto() {
-    return FinishedOrderDto.builder()
-        .id(this.id)
-        .supplierId(this.supplierId)
-        .channelId(this.channelId)
-        .purchaserId(this.purchaserId)
-        .createdAt(this.createdAt)
-        .userOrders(getUserOrdersDto())
-        .build();
+  public OrderDto finishedDto() {
+    return dto();
   }
 
-  public OrderWithStatusDto orderWithStatusDto() {
-    return OrderWithStatusDto.builder()
+  SimplifiedOrderDto simplifiedDto() {
+    return SimplifiedOrderDto.builder()
         .id(this.id)
         .uuid(this.uuid)
         .supplierId(this.supplierId)
@@ -142,13 +121,42 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
         .purchaserId(this.purchaserId)
         .createdAt(this.createdAt)
         .status(this.status.dto())
-        .userOrders(getUserOrdersDto())
+        .userOrders(getUserOrdersWithFoodDto())
         .build();
   }
 
-  private List<UserOrderDto> getUserOrdersDto() {
-    return this.userOrders.stream()
+  OrderIdentityDto identityDto() {
+    return OrderIdentityDto.builder()
+        .id(this.id)
+        .uuid(this.uuid)
+        .supplierId(this.supplierId)
+        .channelId(this.channelId)
+        .purchaserId(this.purchaserId)
+        .createdAt(this.createdAt)
+        .status(this.status.dto())
+        .build();
+  }
+
+  OrderDto dto() {
+    final List<UserOrderDto> userOrdersDto = this.userOrders.stream()
         .map(UserOrder::dto)
+        .collect(toList());
+
+    return OrderDto.builder()
+        .id(this.id)
+        .uuid(this.uuid)
+        .supplierId(this.supplierId)
+        .channelId(this.channelId)
+        .purchaserId(this.purchaserId)
+        .createdAt(this.createdAt)
+        .status(this.status.dto())
+        .userOrders(userOrdersDto)
+        .build();
+  }
+
+  private List<UserOrderWithFoodDto> getUserOrdersWithFoodDto() {
+    return this.userOrders.stream()
+        .map(UserOrder::withFoodDto)
         .flatMap(Collection::stream)
         .collect(toList());
   }

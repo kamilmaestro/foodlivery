@@ -1,6 +1,5 @@
 package com.kamilmarnik.foodlivery.payment.domain;
 
-import com.kamilmarnik.foodlivery.order.domain.AmountOfFood;
 import com.kamilmarnik.foodlivery.order.event.OrderFinished;
 import com.kamilmarnik.foodlivery.supplier.domain.Money;
 import lombok.AccessLevel;
@@ -58,15 +57,15 @@ final class PaymentCreator {
     return PaymentDetails.builder()
         .paymentUuid(paymentUuid)
         .foodName(userOrder.getFoodName())
-        .amountOfFood(userOrder.getFoodAmount())
+        .amountOfFood(userOrder.getAmountOfFood())
         .foodPrice(userOrder.getFoodPrice())
         .build();
   }
 
   private Money calculateOrderPrice(List<OrderFinished.UserOrderFinished> userOrders) {
     final double price = userOrders.stream()
-        .filter(userOrder -> userOrder.getFoodPrice() >= 0 && userOrder.getFoodAmount() > 0)
-        .mapToDouble(userOrder -> userOrder.getFoodPrice() * userOrder.getFoodAmount())
+        .filter(userOrder -> userOrder.getFoodPrice() >= 0 && userOrder.getAmountOfFood() > 0)
+        .mapToDouble(userOrder -> userOrder.getFoodPrice() * userOrder.getAmountOfFood())
         .sum();
 
     return new Money(price);

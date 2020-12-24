@@ -58,4 +58,10 @@ class ChannelController {
     return ResponseEntity.ok(channelFacade.findChannelMembers(channelId));
   }
 
+  @PostMapping("/ids")
+  public ResponseEntity<Page<ChannelDto>> findChannelsByIds(@RequestBody Collection<Long> channelIds,
+                                                            @ModelAttribute PageInfo pageInfo) {
+    return ResponseEntity.ok(channelFacade.findChannelsByIds(channelIds, pageInfo));
+  }
+
 }
