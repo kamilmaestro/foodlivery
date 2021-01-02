@@ -10,11 +10,13 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 
+import javax.transaction.Transactional;
 import java.util.Set;
 
 import static com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUserGetter.getLoggedUserId;
 import static com.kamilmarnik.foodlivery.payment.domain.PaymentStatus.PAID_OFF;
 
+@Transactional
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PaymentFacade {

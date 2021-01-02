@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import javax.transaction.Transactional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ import static com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUse
 import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.*;
 import static com.kamilmarnik.foodlivery.order.domain.ProposalStatus.WAITING;
 
+@Transactional
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderFacade {

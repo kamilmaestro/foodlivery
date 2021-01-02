@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
@@ -23,7 +24,7 @@ import static com.kamilmarnik.foodlivery.payment.domain.PaymentStatus.PAID_OFF;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "payments")
-class Payment {
+class Payment implements Serializable {
 
   @Setter(value = AccessLevel.PACKAGE)
   @Id
@@ -46,7 +47,7 @@ class Payment {
   Long channelId;
 
   @Embedded
-  @AttributeOverride(name = "toPay", column = @Column(name = "to_pay"))
+  @AttributeOverride(name = "price", column = @Column(name = "to_pay"))
   Money toPay;
 
   @Column(name = "created_at")

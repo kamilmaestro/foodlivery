@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -14,7 +15,7 @@ import javax.persistence.*;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "payment_details")
-class PaymentDetails {
+class PaymentDetails implements Serializable {
 
   @Setter(value = AccessLevel.PACKAGE)
   @Id
@@ -32,7 +33,7 @@ class PaymentDetails {
   AmountOfFood amountOfFood;
 
   @Embedded
-  @AttributeOverride(name = "foodPrice", column = @Column(name = "food_price"))
+  @AttributeOverride(name = "price", column = @Column(name = "food_price"))
   Money foodPrice;
 
   @Builder
