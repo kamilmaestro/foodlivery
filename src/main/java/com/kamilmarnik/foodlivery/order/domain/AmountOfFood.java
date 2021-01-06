@@ -2,8 +2,6 @@ package com.kamilmarnik.foodlivery.order.domain;
 
 import com.kamilmarnik.foodlivery.supplier.exception.IncorrectAmountOfFood;
 import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
@@ -12,7 +10,6 @@ import java.util.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Embeddable
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public final class AmountOfFood {
 
@@ -31,7 +28,7 @@ public final class AmountOfFood {
   private int getVerifiedAmountOfFood(Integer amountOfFood) {
     return Optional.ofNullable(amountOfFood)
         .filter(this::isNaturalNumber)
-        .orElseThrow(() -> new IncorrectAmountOfFood("Incorrect amount of food: " + amountOfFood));
+        .orElseThrow(() -> new IncorrectAmountOfFood(amountOfFood));
   }
 
   private boolean isNaturalNumber(int number) {

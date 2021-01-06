@@ -42,8 +42,8 @@ public class PaymentFacade {
 
   @EventListener
   void onOrderFinished(OrderFinished orderFinished) {
-    final Set<Payment> payment = paymentCreator.createPayments(orderFinished);
-    paymentRepository.saveAll(payment);
+    final Set<Payment> payments = paymentCreator.createPayments(orderFinished);
+    paymentRepository.saveAll(payments);
   }
 
   private Payment getPayment(long paymentId) {

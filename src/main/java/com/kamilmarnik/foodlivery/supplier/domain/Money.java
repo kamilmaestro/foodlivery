@@ -25,7 +25,7 @@ public final class Money {
     this.price = Optional.ofNullable(price)
       .filter(this::isMoney)
       .map(BigDecimal::valueOf)
-      .orElseThrow(() -> new InvalidFoodPrice("Can not add a food with price: " + price));
+      .orElseThrow(() -> new InvalidFoodPrice("Invalid price: " + price));
   }
 
   public double getValueAsDouble() {
