@@ -62,9 +62,11 @@ class Payment implements Serializable {
   Set<PaymentDetails> paymentDetails;
 
   Payment marksAsPaidOff() {
-    this.status = Objects.equals(this.purchaserId, getLoggedUserId()) ?
-        PAID_OFF
-        : PAID_BY_PAYER;
+    if (!this.status.equals(PAID_OFF)) {
+      this.status = Objects.equals(this.purchaserId, getLoggedUserId()) ?
+          PAID_OFF
+          : PAID_BY_PAYER;
+    }
 
     return this;
   }

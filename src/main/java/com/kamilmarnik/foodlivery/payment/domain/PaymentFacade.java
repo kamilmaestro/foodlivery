@@ -34,6 +34,11 @@ public class PaymentFacade {
         .map(Payment::dto);
   }
 
+  public Page<PaymentDto> getArchivalPayments(PageInfo pageInfo) {
+    return paymentRepository.findAllPaidOffByUserId(getLoggedUserId(), pageInfo.toPageRequest())
+        .map(Payment::dto);
+  }
+
   public void marksAsPaidOff(long paymentId) {
     final Payment payment = getPayment(paymentId);
     final Payment updatedPayment = payment.marksAsPaidOff();

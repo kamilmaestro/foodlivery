@@ -43,8 +43,8 @@ class OrderController {
     return ResponseEntity.ok(orderFacade.finalizeOrder(orderId));
   }
 
-  @DeleteMapping("/{orderId}/userOrder/{userOrderId}")
-  public ResponseEntity<OrderDto> removeOrder(@PathVariable long orderId, @PathVariable long userOrderId) {
+  @DeleteMapping("/{orderId}/user-order/{userOrderId}")
+  public ResponseEntity<OrderDto> removeUserOrder(@PathVariable long orderId, @PathVariable long userOrderId) {
     return ResponseEntity.ok(orderFacade.removeUserOrder(userOrderId, orderId));
   }
 

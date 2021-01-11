@@ -161,4 +161,9 @@ class InMemoryPaymentRepository implements PaymentRepository {
         .collect(Collectors.toList()));
   }
 
+  @Override
+  public Page<Payment> findAllPaidOffByUserId(long userId, Pageable pageable) {
+    return null;
+  }
+
 }
