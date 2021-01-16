@@ -33,6 +33,7 @@ public class OrderConfiguration {
         .orderRepository(orderRepository)
         .orderCreator(new OrderCreator(supplierFacade, expirationConfig, timeProvider))
         .eventPublisher(new OrderEventPublisher(eventPublisher, timeProvider))
+        .userOrderRemover(new UserOrderRemover(orderRepository))
         .build();
   }
 

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
@@ -15,6 +16,9 @@ interface OrderRepository extends JpaRepository<Order, Long> {
   Optional<Order> findBySupplierIdAndChannelIdAndStatusNot(long supplierId, long channelId, OrderStatus status);
 
   Optional<Order> findByIdAndStatus(long orderId, OrderStatus status);
+
+  @Query("SELECT o FROM Order o WHERE o.id = :orderId AND o.status IN (:status)")
+  Optional<Order> findByIdAndStatusIn(@Param("orderId") long orderId, @Param("status") Collection<OrderStatus> status);
 
   Page<Order> findAllByChannelIdAndStatusNot(long channelId, OrderStatus status, Pageable pageable);
 

@@ -28,10 +28,17 @@ public final class LoggedUserGetter {
   }
 
   public static Long getLoggedUserId() {
+    return getLoggedInUser().getUserId();
+  }
+
+  public static boolean isAdmin() {
+    return getLoggedInUser().isAdmin();
+  }
+
+  private static CustomUserDetails getLoggedInUser() {
     return Optional.ofNullable(SecurityContextHolder.getContext())
         .map(SecurityContext::getAuthentication)
         .map(authentication -> (CustomUserDetails) authentication.getPrincipal())
-        .map(CustomUserDetails::getUserId)
         .orElseThrow(() -> new UserNotFound("Can not get currently logged in user"));
   }
 

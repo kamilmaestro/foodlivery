@@ -20,7 +20,7 @@ class OrderExpirationSpec extends BaseOrderSpec {
   def "proposals should be expired after specified amount of time" () {
     given: "there is a proposal for the $PIZZA_RESTAURANT"
       ProposalDto proposal = addProposal(PIZZA_RESTAURANT.name)
-    and: "4 hours have passed"
+    and: "3 hours have passed"
       timeProvider.withFixedTime(Instant.now().plus(3, ChronoUnit.HOURS))
     when: "proposals expiration status is updated"
       orderFacade.updateExpiredProposals()

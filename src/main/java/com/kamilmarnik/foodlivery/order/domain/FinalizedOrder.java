@@ -6,7 +6,7 @@ interface FinalizedOrder {
 
   OrderDto finalizedDto();
 
-  FinalizedOrder removeUserOrder(long userOrderId);
+  FinalizedOrder removeUserOrderFromFinalizedOrder(long userOrderId);
 
   FinishedOrder finishOrder();
 

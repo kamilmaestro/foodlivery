@@ -9,6 +9,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
+
+import static com.kamilmarnik.foodlivery.user.domain.User.UserRole.ADMIN;
 
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -18,6 +21,12 @@ public class CustomUserDetails implements UserDetails {
   String username;
   String password;
   User.UserRole role;
+
+  public boolean isAdmin() {
+    return Optional.ofNullable(this.role)
+        .map(role -> role.equals(ADMIN))
+        .orElse(false);
+  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

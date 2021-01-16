@@ -171,6 +171,13 @@ class InMemoryOrderRepository implements OrderRepository {
   }
 
   @Override
+  public Optional<Order> findByIdAndStatusIn(long orderId, Collection<OrderStatus> status) {
+    return values.values().stream()
+        .filter(order -> order.getId().equals(orderId) && status.contains(order.getStatus()))
+        .findFirst();
+  }
+
+  @Override
   public Page<Order> findAllByChannelIdAndStatusNot(long channelId, OrderStatus status, Pageable pageable) {
     return null;
   }

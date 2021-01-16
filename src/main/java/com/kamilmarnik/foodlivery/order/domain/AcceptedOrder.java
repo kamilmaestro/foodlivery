@@ -6,6 +6,8 @@ interface AcceptedOrder {
 
   OrderDto acceptedDto();
 
+  AcceptedOrder removeUserOrderFromAcceptedOrder(long userOrderId);
+
   FinalizedOrder finalizeOrder();
 
 }

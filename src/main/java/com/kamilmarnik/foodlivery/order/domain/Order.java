@@ -2,6 +2,7 @@ package com.kamilmarnik.foodlivery.order.domain;
 
 import com.kamilmarnik.foodlivery.order.dto.*;
 import com.kamilmarnik.foodlivery.order.exception.OrderFinalizationForbidden;
+import com.kamilmarnik.foodlivery.order.exception.UserOrderRemovalForbidden;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,10 +11,11 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUserGetter.getLoggedUserId;
+import static com.kamilmarnik.foodlivery.infrastructure.authentication.LoggedUserGetter.isAdmin;
 import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.*;
 import static java.time.Instant.now;
 import static java.util.stream.Collectors.toList;
@@ -87,7 +89,15 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
   }
 
   @Override
-  public FinalizedOrder removeUserOrder(long userOrderId) {
+  public AcceptedOrder removeUserOrderFromAcceptedOrder(long userOrderId) {
+    checkIfCanRemoveUserOrderFromAcceptedOrder(userOrderId);
+    this.userOrders.removeIf(userOrder -> userOrder.getId().equals(userOrderId));
+    return new Order(this, ORDERED);
+  }
+
+  @Override
+  public FinalizedOrder removeUserOrderFromFinalizedOrder(long userOrderId) {
+    checkIfCanRemoveUserOrderFromFinalizedOrder(userOrderId);
     this.userOrders.removeIf(userOrder -> userOrder.getId().equals(userOrderId));
     return new Order(this, FINALIZED);
   }
@@ -159,6 +169,28 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
         .map(UserOrder::withFoodDto)
         .flatMap(Collection::stream)
         .collect(toList());
+  }
+
+  private void checkIfCanRemoveUserOrderFromFinalizedOrder(long userOrderId) {
+    if (!getLoggedUserId().equals(this.purchaserId) && !isAdmin()) {
+      throw new UserOrderRemovalForbidden(userOrderId);
+    }
+  }
+
+  private void checkIfCanRemoveUserOrderFromAcceptedOrder(long userOrderId) {
+    if (!getLoggedUserId().equals(this.purchaserId) && !isAdmin() && !isBuyer(userOrderId)) {
+      throw new UserOrderRemovalForbidden(userOrderId);
+    }
+  }
+
+  private boolean isBuyer(long userOrderId) {
+    final Optional<UserOrder> foundUserOrder = userOrders.stream()
+        .filter(userOrder -> userOrder.getId() == userOrderId)
+        .findFirst();
+
+    return foundUserOrder
+        .map(userOrder -> userOrder.getOrderedFor().equals(getLoggedUserId()))
+        .orElse(false);
   }
 
 }

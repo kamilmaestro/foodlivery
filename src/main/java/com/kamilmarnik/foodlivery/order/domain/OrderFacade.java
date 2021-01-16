@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,7 @@ public class OrderFacade {
   OrderRepository orderRepository;
   OrderCreator orderCreator;
   OrderEventPublisher eventPublisher;
+  UserOrderRemover userOrderRemover;
 
   public ProposalDto createProposal(AddProposalDto addProposal) {
     supplierFacade.checkIfFoodExists(addProposal.getFoodIds(), addProposal.getSupplierId());
@@ -63,10 +65,7 @@ public class OrderFacade {
   }
 
   public OrderDto removeUserOrder(long userOrderId, long orderId) {
-    final FinalizedOrder finalizedOrder = getOrder(orderId, FINALIZED);
-    final FinalizedOrder withoutRemovedUserOrder = finalizedOrder.removeUserOrder(userOrderId);
-
-    return orderRepository.saveFinalized(withoutRemovedUserOrder).finalizedDto();
+    return userOrderRemover.removeUserOrder(userOrderId, orderId);
   }
 
   public OrderDto finishOrder(long orderId) {
