@@ -1,5 +1,6 @@
 package com.kamilmarnik.foodlivery.order.domain;
 
+import com.kamilmarnik.foodlivery.order.dto.EditUserOrderDto;
 import com.kamilmarnik.foodlivery.order.dto.OrderedFoodDto;
 import com.kamilmarnik.foodlivery.order.dto.UserOrderDto;
 import com.kamilmarnik.foodlivery.order.dto.UserOrderWithFoodDto;
@@ -11,11 +12,13 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.time.Instant.now;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -81,6 +84,18 @@ class UserOrder implements Serializable {
                 .orderedFor(this.orderedFor)
                 .build()
         ).collect(toList());
+  }
+
+  void edit(EditUserOrderDto editUserOrder) {
+    final Map<Long, EditUserOrderDto.EditFoodDto> foodByIds = editUserOrder.getEditedFood().stream()
+        .collect(toMap(EditUserOrderDto.EditFoodDto::getOrderedFoodId, Function.identity()));
+    this.food
+        .stream()
+        .filter(food -> foodByIds.containsKey(food.getId()))
+        .forEach(food -> {
+          final EditUserOrderDto.EditFoodDto editedFood = foodByIds.get(food.getId());
+          food.edit(editedFood.getAmount(), editedFood.getPrice());
+        });
   }
 
 }

@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,6 +68,14 @@ class OrderController {
   @GetMapping("/user")
   public ResponseEntity<Page<OrderIdentityDto>> findUserOrders(@ModelAttribute PageInfo pageInfo) {
     return ResponseEntity.ok(orderFacade.findUserOrders(pageInfo));
+  }
+
+  @PutMapping("/{orderId}/user-order/{userOrderId}")
+  public ResponseEntity<Void> editUserOrder(@PathVariable long orderId,
+                                            @PathVariable long userOrderId,
+                                            @RequestBody EditUserOrderRequest editUserOrder) {
+    orderFacade.editUserOrder(editUserOrder.toEditUserOrderDto(orderId, userOrderId));
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 
 }

@@ -98,6 +98,12 @@ public class OrderFacade {
         .map(Order::identityDto);
   }
 
+  public void editUserOrder(EditUserOrderDto editUserOrder) {
+    final FinalizedOrder order = getOrder(editUserOrder.getOrderId(), FINALIZED);
+    final FinalizedOrder editedOrder = order.editUserOrder(editUserOrder);
+    orderRepository.saveFinalized(editedOrder);
+  }
+
   void updateExpiredProposals() {
     final Set<Proposal> expiredProposals = proposalRepository.findToExpire(timeProvider.now()).stream()
         .map(Proposal::expire)

@@ -76,8 +76,20 @@ class InMemoryOrderRepository implements OrderRepository {
       long orderId = new Random().nextLong();
       userOrder.setId(orderId);
     }
+    final Set<OrderedFood> orderedFood = userOrder.getFood().stream()
+        .map(this::saveOrderedFood)
+        .collect(Collectors.toSet());
 
-    return userOrder;
+    return userOrder.toBuilder().food(orderedFood).build();
+  }
+
+  private OrderedFood saveOrderedFood(OrderedFood orderedFood) {
+    if (orderedFood.getId() == null || orderedFood.getId() == 0L) {
+      long orderId = new Random().nextLong();
+      orderedFood.setId(orderId);
+    }
+
+    return orderedFood;
   }
 
   @Override

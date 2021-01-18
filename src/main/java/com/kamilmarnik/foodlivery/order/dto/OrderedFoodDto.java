@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public final class OrderedFoodDto {
 
+  long id;
   String userOrderUuid;
   String foodName;
   int amountOfFood;

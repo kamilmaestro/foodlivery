@@ -2,6 +2,7 @@ package com.kamilmarnik.foodlivery.order.domain;
 
 import com.kamilmarnik.foodlivery.order.dto.*;
 import com.kamilmarnik.foodlivery.order.exception.OrderFinalizationForbidden;
+import com.kamilmarnik.foodlivery.order.exception.UserOrderEditionForbidden;
 import com.kamilmarnik.foodlivery.order.exception.UserOrderRemovalForbidden;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -103,6 +104,16 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
   }
 
   @Override
+  public FinalizedOrder editUserOrder(EditUserOrderDto editUserOrder) {
+    checkIfCanEditUserOrder(editUserOrder.getUserOrderId());
+    this.userOrders.stream()
+        .filter(userOrder -> userOrder.getId().equals(editUserOrder.getUserOrderId()))
+        .forEach(userOrder -> userOrder.edit(editUserOrder));
+
+    return this;
+  }
+
+  @Override
   public FinishedOrder finishOrder() {
     return new Order(this, FINISHED);
   }
@@ -180,6 +191,12 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
   private void checkIfCanRemoveUserOrderFromAcceptedOrder(long userOrderId) {
     if (!getLoggedUserId().equals(this.purchaserId) && !isAdmin() && !isBuyer(userOrderId)) {
       throw new UserOrderRemovalForbidden(userOrderId);
+    }
+  }
+
+  private void checkIfCanEditUserOrder(long userOrderId) {
+    if (!getLoggedUserId().equals(this.purchaserId) && !isAdmin() && !this.status.equals(FINALIZED)) {
+      throw new UserOrderEditionForbidden(userOrderId);
     }
   }
 

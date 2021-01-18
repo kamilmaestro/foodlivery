@@ -43,11 +43,17 @@ class OrderedFood {
 
   OrderedFoodDto dto() {
     return OrderedFoodDto.builder()
+        .id(this.id)
         .userOrderUuid(this.userOrderUuid)
         .foodName(this.name)
         .amountOfFood(this.amount.getValue())
         .foodPrice(this.price.getValueAsDouble())
         .build();
+  }
+
+  void edit(int amount, double price) {
+    this.amount = new AmountOfFood(amount);
+    this.price = new Money(price);
   }
 
 }
