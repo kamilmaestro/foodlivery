@@ -1,8 +1,10 @@
 package com.kamilmarnik.foodlivery.order.infrastructure;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kamilmarnik.foodlivery.order.dto.EditUserOrderDto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
@@ -11,9 +13,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 final class EditUserOrderRequest {
+
+  EditUserOrderRequest(@JsonProperty("editedFood") Collection<EditFoodRequest> editedFood) {
+    this.editedFood = editedFood;
+  }
 
   Collection<EditFoodRequest> editedFood;
 
@@ -30,9 +35,16 @@ final class EditUserOrderRequest {
   }
 
   @Getter
-  @AllArgsConstructor
   @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-  public static final class EditFoodRequest {
+  static final class EditFoodRequest {
+
+    EditFoodRequest(@JsonProperty("id") long orderedFoodId,
+                    @JsonProperty("foodPrice") double price,
+                    @JsonProperty("amountOfFood") int amount) {
+      this.orderedFoodId = orderedFoodId;
+      this.price = price;
+      this.amount = amount;
+    }
 
     long orderedFoodId;
     double price;
