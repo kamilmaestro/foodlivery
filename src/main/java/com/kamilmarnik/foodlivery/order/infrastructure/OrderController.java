@@ -24,57 +24,63 @@ class OrderController {
   }
 
   @PostMapping("/")
-  public ResponseEntity<ProposalDto> createProposal(@RequestBody AddProposalDto addProposal) {
+  ResponseEntity<ProposalDto> createProposal(@RequestBody AddProposalDto addProposal) {
     return ResponseEntity.ok(orderFacade.createProposal(addProposal));
   }
 
   @GetMapping("/channel/{channelId}")
-  public ResponseEntity<Page<SimplifiedOrderDto>> findNotFinishedOrders(@PathVariable long channelId,
-                                                                        @ModelAttribute PageInfo pageInfo) {
-    return ResponseEntity.ok(orderFacade.findNotFinishedOrders(channelId, pageInfo));
+  ResponseEntity<Page<SimplifiedOrderDto>> findOrdersInChannel(@PathVariable long channelId,
+                                                               @ModelAttribute PageInfo pageInfo) {
+    return ResponseEntity.ok(orderFacade.findOrdersInChannel(channelId, pageInfo));
   }
 
   @PostMapping("/purchaser")
-  public ResponseEntity<OrderDto> becomePurchaser(@RequestBody NewPurchaserDto newPurchaser) {
+  ResponseEntity<OrderDto> becomePurchaser(@RequestBody NewPurchaserDto newPurchaser) {
     return ResponseEntity.ok(orderFacade.becomePurchaser(newPurchaser));
   }
 
   @PostMapping("/{orderId}/finalize")
-  public ResponseEntity<OrderDto> finalizeOrder(@PathVariable long orderId) {
+  ResponseEntity<OrderDto> finalizeOrder(@PathVariable long orderId) {
     return ResponseEntity.ok(orderFacade.finalizeOrder(orderId));
   }
 
   @DeleteMapping("/{orderId}/user-order/{userOrderId}")
-  public ResponseEntity<OrderDto> removeUserOrder(@PathVariable long orderId, @PathVariable long userOrderId) {
+  ResponseEntity<OrderDto> removeUserOrder(@PathVariable long orderId, @PathVariable long userOrderId) {
     return ResponseEntity.ok(orderFacade.removeUserOrder(userOrderId, orderId));
   }
 
   @PostMapping("/{orderId}/finish")
-  public ResponseEntity<OrderDto> finishOrder(@PathVariable long orderId) {
+  ResponseEntity<OrderDto> finishOrder(@PathVariable long orderId) {
     return ResponseEntity.ok(orderFacade.finishOrder(orderId));
   }
 
   @GetMapping("/{orderId}")
-  public ResponseEntity<OrderDto> getOrder(@PathVariable long orderId) {
+  ResponseEntity<OrderDto> getOrder(@PathVariable long orderId) {
     return ResponseEntity.ok(orderFacade.getOrderDto(orderId));
   }
 
   @GetMapping("/channel/{channelId}/proposals")
-  public ResponseEntity<Page<ProposalDto>> findChannelProposals(@PathVariable long channelId,
+  ResponseEntity<Page<ProposalDto>> findChannelProposals(@PathVariable long channelId,
                                                                 @ModelAttribute PageInfo pageInfo) {
     return ResponseEntity.ok(orderFacade.findChannelProposals(channelId, pageInfo));
   }
 
   @GetMapping("/user")
-  public ResponseEntity<Page<OrderIdentityDto>> findUserOrders(@ModelAttribute PageInfo pageInfo) {
+  ResponseEntity<Page<OrderIdentityDto>> findUserOrders(@ModelAttribute PageInfo pageInfo) {
     return ResponseEntity.ok(orderFacade.findUserOrders(pageInfo));
   }
 
   @PutMapping("/{orderId}/user-order/{userOrderId}")
-  public ResponseEntity<Void> editUserOrder(@PathVariable long orderId,
+  ResponseEntity<Void> editUserOrder(@PathVariable long orderId,
                                             @PathVariable long userOrderId,
                                             @RequestBody EditUserOrderRequest editUserOrder) {
     orderFacade.editUserOrder(editUserOrder.toEditUserOrderDto(orderId, userOrderId));
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
+
+  @DeleteMapping("/{orderId}")
+  ResponseEntity<Void> resignFromPurchase(@PathVariable long orderId) {
+    orderFacade.resignFromPurchase(orderId);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 

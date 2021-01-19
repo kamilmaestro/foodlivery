@@ -11,6 +11,8 @@ interface FinalizedOrder {
 
   FinalizedOrder editUserOrder(EditUserOrderDto editUserOrder);
 
+  CancelledOrder resignFromFinalizedOrder();
+
   FinishedOrder finishOrder();
 
 }

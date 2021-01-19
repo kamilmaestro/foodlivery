@@ -8,6 +8,8 @@ interface AcceptedOrder {
 
   AcceptedOrder removeUserOrderFromAcceptedOrder(long userOrderId);
 
+  CancelledOrder resignFromAcceptedOrder();
+
   FinalizedOrder finalizeOrder();
 
 }

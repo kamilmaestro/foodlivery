@@ -17,20 +17,14 @@ final class UserOrderRemover {
 
   OrderRepository orderRepository;
 
-  OrderDto removeUserOrder(long userOrderId, long orderId) {
-    final Order order = getOrder(orderId, ORDERED, FINALIZED);
+  OrderDto removeUserOrder(long userOrderId, Order order) {
     if (order.getStatus().equals(ORDERED)) {
       final AcceptedOrder editedOrder = order.removeUserOrderFromAcceptedOrder(userOrderId);
-      return orderRepository.saveAccepted(editedOrder).acceptedDto();
+      return orderRepository.saveOrder(editedOrder).acceptedDto();
     } else {
       final FinalizedOrder editedOrder = order.removeUserOrderFromFinalizedOrder(userOrderId);
-      return orderRepository.saveFinalized(editedOrder).finalizedDto();
+      return orderRepository.saveOrder(editedOrder).finalizedDto();
     }
-  }
-
-  private Order getOrder(Long orderId, OrderStatus... status) {
-    return orderRepository.findByIdAndStatusIn(orderId, Arrays.asList(status))
-        .orElseThrow(() -> new OrderNotFound(orderId));
   }
 
 }

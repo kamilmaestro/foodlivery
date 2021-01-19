@@ -4,12 +4,15 @@ import com.kamilmarnik.foodlivery.order.dto.OrderStatusDto;
 
 enum OrderStatus {
 
+  CANCELLED,
   FINALIZED,
   FINISHED,
   ORDERED;
 
   OrderStatusDto dto() {
     switch (this) {
+      case CANCELLED:
+        return OrderStatusDto.CANCELLED;
       case FINALIZED:
         return OrderStatusDto.FINALIZED;
       case FINISHED:

@@ -20,30 +20,16 @@ interface OrderRepository extends JpaRepository<Order, Long> {
   @Query("SELECT o FROM Order o WHERE o.id = :orderId AND o.status IN (:status)")
   Optional<Order> findByIdAndStatusIn(@Param("orderId") long orderId, @Param("status") Collection<OrderStatus> status);
 
-  Page<Order> findAllByChannelIdAndStatusNot(long channelId, OrderStatus status, Pageable pageable);
+  Page<Order> findAllByChannelIdAndStatusIn(long channelId, Collection<OrderStatus> status, Pageable pageable);
 
   @Query("SELECT o FROM Order o WHERE o.purchaserId = :userId OR " +
       ":userId IN (SELECT uo.orderedFor FROM UserOrder uo WHERE uo.orderUuid = o.uuid)")
   Page<Order> findAllUserOrders(@Param("userId") long userId, Pageable pageable);
 
-  @SuppressWarnings("unchecked")
-  default <T extends AcceptedOrder> T saveAccepted(T order) {
-    requireNonNull(order);
-    final Order savedOrder = this.save((Order) order);
-
-    return (T) savedOrder;
-  }
+  Optional<Order> findByIdAndStatusNot(long orderId, OrderStatus status);
 
   @SuppressWarnings("unchecked")
-  default <T extends FinalizedOrder> T saveFinalized(T order) {
-    requireNonNull(order);
-    final Order savedOrder = this.save((Order) order);
-
-    return (T) savedOrder;
-  }
-
-  @SuppressWarnings("unchecked")
-  default <T extends FinishedOrder> T saveFinished(T order) {
+  default <T> T saveOrder(T order) {
     requireNonNull(order);
     final Order savedOrder = this.save((Order) order);
 

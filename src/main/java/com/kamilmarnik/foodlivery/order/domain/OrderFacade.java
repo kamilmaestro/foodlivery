@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 
 import javax.transaction.Transactional;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,23 +55,24 @@ public class OrderFacade {
     final AcceptedOrder order = orderCreator
         .makeOrder(newPurchaser.getSupplierId(), supplierProposals, newPurchaser.getChannelId());
 
-    return orderRepository.saveAccepted(order).acceptedDto();
+    return orderRepository.saveOrder(order).acceptedDto();
   }
 
   public OrderDto finalizeOrder(long orderId) {
     final AcceptedOrder order = getOrder(orderId, ORDERED);
     final FinalizedOrder finalizedOrder = order.finalizeOrder();
 
-    return orderRepository.saveFinalized(finalizedOrder).finalizedDto();
+    return orderRepository.saveOrder(finalizedOrder).finalizedDto();
   }
 
   public OrderDto removeUserOrder(long userOrderId, long orderId) {
-    return userOrderRemover.removeUserOrder(userOrderId, orderId);
+    final Order order = getOrder(orderId, ORDERED, FINALIZED);
+    return userOrderRemover.removeUserOrder(userOrderId, order);
   }
 
   public OrderDto finishOrder(long orderId) {
     final FinalizedOrder finalizedOrder = getOrder(orderId, FINALIZED);
-    final OrderDto finishedOrder = orderRepository.saveFinished(finalizedOrder.finishOrder()).finishedDto();
+    final OrderDto finishedOrder = orderRepository.saveOrder(finalizedOrder.finishOrder()).finishedDto();
     eventPublisher.notifyOrderFinish(finishedOrder);
 
     return finishedOrder;
@@ -81,8 +83,8 @@ public class OrderFacade {
         .map(Proposal::dto);
   }
 
-  public Page<SimplifiedOrderDto> findNotFinishedOrders(long channelId, PageInfo pageInfo) {
-    return orderRepository.findAllByChannelIdAndStatusNot(channelId, FINISHED, pageInfo.toPageRequest())
+  public Page<SimplifiedOrderDto> findOrdersInChannel(long channelId, PageInfo pageInfo) {
+    return orderRepository.findAllByChannelIdAndStatusIn(channelId, List.of(ORDERED, FINALIZED), pageInfo.toPageRequest())
         .map(Order::simplifiedDto);
   }
 
@@ -101,7 +103,15 @@ public class OrderFacade {
   public void editUserOrder(EditUserOrderDto editUserOrder) {
     final FinalizedOrder order = getOrder(editUserOrder.getOrderId(), FINALIZED);
     final FinalizedOrder editedOrder = order.editUserOrder(editUserOrder);
-    orderRepository.saveFinalized(editedOrder);
+    orderRepository.saveOrder(editedOrder);
+  }
+
+  public void resignFromPurchase(long orderId) {
+    final Order order = getOrder(orderId, ORDERED, FINALIZED);
+    final CancelledOrder cancelledOrder = order.getStatus().equals(ORDERED) ?
+        order.resignFromAcceptedOrder()
+        : order.resignFromFinalizedOrder();
+    orderRepository.saveOrder(cancelledOrder);
   }
 
   void updateExpiredProposals() {
@@ -124,6 +134,11 @@ public class OrderFacade {
   private Order getOrder(Long orderId, OrderStatus status) {
     return orderRepository.findByIdAndStatus(orderId, status)
         .orElseThrow(() -> new OrderNotFound(orderId, status.name()));
+  }
+
+  private Order getOrder(Long orderId, OrderStatus... status) {
+    return orderRepository.findByIdAndStatusIn(orderId, Arrays.asList(status))
+        .orElseThrow(() -> new OrderNotFound(orderId));
   }
 
 }

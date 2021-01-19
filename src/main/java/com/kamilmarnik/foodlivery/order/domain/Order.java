@@ -2,6 +2,7 @@ package com.kamilmarnik.foodlivery.order.domain;
 
 import com.kamilmarnik.foodlivery.order.dto.*;
 import com.kamilmarnik.foodlivery.order.exception.OrderFinalizationForbidden;
+import com.kamilmarnik.foodlivery.order.exception.ResignalFromPurchaseForbidden;
 import com.kamilmarnik.foodlivery.order.exception.UserOrderEditionForbidden;
 import com.kamilmarnik.foodlivery.order.exception.UserOrderRemovalForbidden;
 import lombok.*;
@@ -28,7 +29,7 @@ import static java.util.stream.Collectors.toList;
 @Builder(toBuilder = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "orders")
-class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializable {
+class Order implements AcceptedOrder, CancelledOrder, FinalizedOrder, FinishedOrder, Serializable {
 
   @Setter(value = AccessLevel.PACKAGE)
   @Id
@@ -114,6 +115,16 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
   }
 
   @Override
+  public CancelledOrder resignFromAcceptedOrder() {
+    return resign();
+  }
+
+  @Override
+  public CancelledOrder resignFromFinalizedOrder() {
+    return resign();
+  }
+
+  @Override
   public FinishedOrder finishOrder() {
     return new Order(this, FINISHED);
   }
@@ -182,6 +193,11 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
         .collect(toList());
   }
 
+  private CancelledOrder resign() {
+    checkIfCanResign();
+    return new Order(this, CANCELLED);
+  }
+
   private void checkIfCanRemoveUserOrderFromFinalizedOrder(long userOrderId) {
     if (!getLoggedUserId().equals(this.purchaserId) && !isAdmin()) {
       throw new UserOrderRemovalForbidden(userOrderId);
@@ -199,6 +215,13 @@ class Order implements AcceptedOrder, FinalizedOrder, FinishedOrder, Serializabl
       throw new UserOrderEditionForbidden(userOrderId);
     }
   }
+
+  private void checkIfCanResign() {
+    if (!getLoggedUserId().equals(this.purchaserId) && !isAdmin()) {
+      throw new ResignalFromPurchaseForbidden(this.id);
+    }
+  }
+
 
   private boolean isBuyer(long userOrderId) {
     final Optional<UserOrder> foundUserOrder = userOrders.stream()
