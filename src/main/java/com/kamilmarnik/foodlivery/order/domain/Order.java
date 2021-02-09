@@ -222,7 +222,6 @@ class Order implements AcceptedOrder, CancelledOrder, FinalizedOrder, FinishedOr
     }
   }
 
-
   private boolean isBuyer(long userOrderId) {
     final Optional<UserOrder> foundUserOrder = userOrders.stream()
         .filter(userOrder -> userOrder.getId() == userOrderId)
