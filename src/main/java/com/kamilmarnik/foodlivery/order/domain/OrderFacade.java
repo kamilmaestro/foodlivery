@@ -48,12 +48,13 @@ public class OrderFacade {
     supplierFacade.checkIfSupplierExists(newPurchaser.getSupplierId());
     checkIfOrderForSupplierAlreadyExists(newPurchaser.getSupplierId(), newPurchaser.getChannelId());
     final Set<Proposal> supplierProposals = proposalRepository
-        .findAllBySupplierIdAndChannelId(newPurchaser.getSupplierId(), newPurchaser.getChannelId());
+        .findAllBySupplierIdAndChannelIdAndStatus(newPurchaser.getSupplierId(), newPurchaser.getChannelId(), WAITING);
     if (supplierProposals.isEmpty()) {
       throw new AnyProposalForSupplierFound("Can not find any proposal for the supplier with id: " + newPurchaser.getSupplierId());
     }
     final AcceptedOrder order = orderCreator
         .makeOrder(newPurchaser.getSupplierId(), supplierProposals, newPurchaser.getChannelId());
+    proposalRepository.saveAll(supplierProposals);
 
     return orderRepository.saveOrder(order).acceptedDto();
   }
@@ -124,7 +125,7 @@ public class OrderFacade {
   }
 
   private void checkIfOrderForSupplierAlreadyExists(long supplierId, long channelId) {
-    orderRepository.findBySupplierIdAndChannelIdAndStatusNot(supplierId, channelId, FINISHED).ifPresent(order -> {
+    orderRepository.findActiveOrderForSupplierInChannel(supplierId, channelId).ifPresent(order -> {
       throw new OrderForSupplierAlreadyExists(
           "Can not create another order in this channel for the supplier with id: " + order.getSupplierId()
       );

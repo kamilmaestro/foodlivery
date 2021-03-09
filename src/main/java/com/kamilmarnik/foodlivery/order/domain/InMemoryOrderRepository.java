@@ -7,6 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.FINALIZED;
+import static com.kamilmarnik.foodlivery.order.domain.OrderStatus.ORDERED;
+
 class InMemoryOrderRepository implements OrderRepository {
 
   private final Map<Long, Order> values = new ConcurrentHashMap<>();
@@ -167,11 +170,11 @@ class InMemoryOrderRepository implements OrderRepository {
   }
 
   @Override
-  public Optional<Order> findBySupplierIdAndChannelIdAndStatusNot(long supplierId, long channelId, OrderStatus status) {
+  public Optional<Order> findActiveOrderForSupplierInChannel(long supplierId, long channelId) {
     return values.values().stream()
         .filter(order -> order.getSupplierId().equals(supplierId) &&
             order.getChannelId().equals(channelId) &&
-            !order.getStatus().equals(status)
+            (order.getStatus().equals(ORDERED) || order.getStatus().equals(FINALIZED))
         ).findFirst();
   }
 

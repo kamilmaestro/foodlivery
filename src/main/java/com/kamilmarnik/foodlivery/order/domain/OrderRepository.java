@@ -13,7 +13,9 @@ import static java.util.Objects.requireNonNull;
 
 interface OrderRepository extends JpaRepository<Order, Long> {
 
-  Optional<Order> findBySupplierIdAndChannelIdAndStatusNot(long supplierId, long channelId, OrderStatus status);
+  @Query("SELECT o FROM Order o WHERE o.supplierId = :supplierId AND o.channelId = :channelId " +
+      "AND o.status = 'ORDERED' OR o.status = 'FINALIZED'")
+  Optional<Order> findActiveOrderForSupplierInChannel(@Param("supplierId") long supplierId, @Param("channelId") long channelId);
 
   Optional<Order> findByIdAndStatus(long orderId, OrderStatus status);
 
